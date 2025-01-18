@@ -3,17 +3,20 @@ import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-route
 import AuthPage from './pages/AuthPage';
 import PrivateRoute from './components/PrivateRoute';
 import { supabase } from './supabaseClient';
+import Layout from './components/Layout';
+import FeedPage from './pages/FeedPage';
+import UserPage from './pages/UserPage';
+import NotFoundPage from './pages/NotFoundPage';
+import FoldersPage from './pages/FoldersPage';
+import AddPhotoPage from './pages/AddPhotoPage';
+import DeletePhotoPage from './pages/DeletePhotoPage';
 
 const CheckSession: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
     const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-
-      if (session) {
-        navigate('/feed');
-      }
+      await supabase.auth.getSession();
     };
 
     checkSession();
@@ -32,9 +35,58 @@ const App: React.FC = () => {
           path="/feed"
           element={
             <PrivateRoute>
-              <h1>Feed</h1>
-              {/* <FeedPage /> */}
+              <Layout>
+                <FeedPage />
+              </Layout>
             </PrivateRoute>
+          }
+        />
+        <Route
+          path="/user"
+          element={
+            <PrivateRoute>
+              <Layout>
+                <UserPage />
+              </Layout>
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/folders"
+          element={
+            <PrivateRoute>
+              <Layout>
+                <FoldersPage />
+              </Layout>
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/add-photo"
+          element={
+            <PrivateRoute>
+              <Layout>
+                <AddPhotoPage />
+              </Layout>
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/delete-photo"
+          element={
+            <PrivateRoute>
+              <Layout>
+                <DeletePhotoPage />
+              </Layout>
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="*"
+          element={
+            <Layout>
+              <NotFoundPage />
+            </Layout>
           }
         />
       </Routes>

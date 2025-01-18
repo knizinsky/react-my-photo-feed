@@ -24,14 +24,17 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
   }, []);
 
   if (isAuthenticated === null) {
+    // Pokaż loading, dopóki nie sprawdzimy sesji
     return <div>Loading...</div>;
   }
 
   if (!isAuthenticated) {
+    // Jeśli nie ma sesji, przekieruj do strony logowania
     return <Navigate to="/auth" />;
   }
 
   return children;
 };
+
 
 export default PrivateRoute;

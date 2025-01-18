@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import styled from 'styled-components';
+import { AuthTokenResponsePassword } from '@supabase/supabase-js';
 
 const AuthPage: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -22,7 +23,7 @@ const AuthPage: React.FC = () => {
       }
 
       navigate('/feed');
-    } catch (err: unknown) {
+    } catch (err: AuthTokenResponsePassword | unknown) {
       if (err instanceof ErrorEvent) {
         setError(err.message);
       } else {
