@@ -1,18 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "../supabaseClient";
 import styled from "styled-components";
-import { User } from "@supabase/supabase-js";
+import { User } from "../types/User";
 
 const UserListPage: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Pobierz użytkowników z bazy danych
   useEffect(() => {
     const fetchUsers = async () => {
       let query = supabase.from("users").select("*");
 
-      // Filtruj użytkowników po nazwie, jeśli wpisano wartość w wyszukiwarkę
       if (searchTerm) {
         query = query.ilike("username", `%${searchTerm}%`);
       }
@@ -33,7 +31,6 @@ const UserListPage: React.FC = () => {
     <Container>
       <h1>Lista użytkowników</h1>
 
-      {/* Wyszukiwarka użytkowników */}
       <SearchSection>
         <input
           type="text"
@@ -43,7 +40,6 @@ const UserListPage: React.FC = () => {
         />
       </SearchSection>
 
-      {/* Lista użytkowników */}
       <UserList>
         {users.map((user) => (
           <UserCard key={user.id}>
@@ -66,7 +62,6 @@ const UserListPage: React.FC = () => {
 
 export default UserListPage;
 
-// Stylowanie
 const Container = styled.div`
   padding: 20px;
 `;

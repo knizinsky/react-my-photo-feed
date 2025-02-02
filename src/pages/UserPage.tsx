@@ -176,7 +176,6 @@ const UserPage: React.FC = () => {
 
 export default UserPage;
 
-// Stylizacja
 const Container = styled.div`
   padding: 20px;
 `;

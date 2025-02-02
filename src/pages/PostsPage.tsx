@@ -15,7 +15,6 @@ const PostsPage: React.FC = () => {
   const [showAddPostButton, setShowAddPostButton] = useState(false);
   const [currentUser, setCurrentUser] = useState<User>(null);
 
-  // Pobierz obecnego użytkownika
   useEffect(() => {
     const fetchCurrentUser = async () => {
       const user = await getUser();
@@ -25,7 +24,6 @@ const PostsPage: React.FC = () => {
     fetchCurrentUser();
   }, []);
 
-  // Funkcja do pobierania postów z komentarzami
   const fetchPosts = async () => {
     const { data: posts, error: postsError } = await supabase
       .from("posts")
@@ -40,12 +38,10 @@ const PostsPage: React.FC = () => {
     }
   };
 
-  // Pobierz posty przy pierwszym renderowaniu
   useEffect(() => {
     fetchPosts();
   }, []);
 
-  // Dodaj nowy post
   const handleAddPost = async () => {
     const user = await getUser();
 
@@ -68,7 +64,6 @@ const PostsPage: React.FC = () => {
     if (error) {
       console.error("Error adding post:", error);
     } else {
-      // Po dodaniu posta, ponownie pobierz posty z bazy danych
       await fetchPosts();
       setNewPostTitle("");
       setNewPostContent("");
@@ -76,7 +71,6 @@ const PostsPage: React.FC = () => {
     }
   };
 
-  // Usuń post
   const handleDeletePost = async (postId: string) => {
     const user = await getUser();
 
@@ -89,17 +83,15 @@ const PostsPage: React.FC = () => {
       .from("posts")
       .delete()
       .eq("id", postId)
-      .eq("user_id", user.id); // Tylko autor może usunąć post
+      .eq("user_id", user.id); 
 
     if (error) {
       console.error("Error deleting post:", error);
     } else {
-      // Po usunięciu posta, ponownie pobierz posty z bazy danych
       await fetchPosts();
     }
   };
 
-  // Dodaj komentarz do posta
   const handleAddComment = async (postId: string) => {
     const user = await getUser();
 
@@ -121,7 +113,6 @@ const PostsPage: React.FC = () => {
     if (error) {
       console.error("Error adding comment:", error);
     } else {
-      // Po dodaniu komentarza, ponownie pobierz posty z bazy danych
       await fetchPosts();
       setNewCommentContent({ ...newCommentContent, [postId]: "" });
     }
@@ -131,7 +122,6 @@ const PostsPage: React.FC = () => {
     <Container>
       <h1>Posty</h1>
 
-      {/* Formularz dodawania postów */}
       <AddPostSection>
         {!showAddPostButton ? (
           <button onClick={() => setShowAddPostButton(true)}>Dodaj post</button>
@@ -155,7 +145,6 @@ const PostsPage: React.FC = () => {
         )}
       </AddPostSection>
 
-      {/* Lista postów */}
       <PostList>
         {posts.map((post) => (
           <PostCard key={post.id}>
@@ -165,14 +154,12 @@ const PostsPage: React.FC = () => {
               <strong>Autor:</strong> {post.user?.username}
             </p>
 
-            {/* Przycisk usuwania posta (tylko dla autora) */}
             {currentUser && post.user_id === currentUser.id && (
               <button onClick={() => handleDeletePost(post.id)}>
                 Usuń post
               </button>
             )}
 
-            {/* Komentarze do posta */}
             <CommentsSection>
               <h3>Komentarze:</h3>
               {post.comments?.map((comment) => (
@@ -183,7 +170,6 @@ const PostsPage: React.FC = () => {
                 </CommentCard>
               ))}
 
-              {/* Formularz dodawania komentarza */}
               <AddCommentSection>
                 <textarea
                   placeholder="Dodaj komentarz"
@@ -209,7 +195,6 @@ const PostsPage: React.FC = () => {
 
 export default PostsPage;
 
-// Stylowanie
 const Container = styled.div`
   padding: 20px;
 `;

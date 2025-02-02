@@ -256,7 +256,6 @@ const FeedPage: React.FC = () => {
 
 export default FeedPage;
 
-// Stylowanie
 const Container = styled.div`
   padding: 20px;
   max-width: 1200px;
