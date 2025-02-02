@@ -1,20 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
 import styled from 'styled-components';
+import { getUser } from '../services/supabaseService';
+import { User } from '@supabase/supabase-js';
+import { Photo } from '../types/Photo';
+import { Post } from '../types/Post';
 
 const UserPage: React.FC = () => {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User>(null);
   const [username, setUsername] = useState('');
   const [avatarUrl, setAvatarUrl] = useState('');
-  const [avatarFile, setAvatarFile] = useState<File | null>(null);
-  const [photos, setPhotos] = useState<any[]>([]);
-  const [posts, setPosts] = useState<any[]>([]);
+  const [avatarFile, setAvatarFile] = useState<File>(null);
+  const [photos, setPhotos] = useState<Photo[]>([]);
+  const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await getUser();
       
       if (user) {
         setUser(user);

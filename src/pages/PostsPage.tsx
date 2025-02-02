@@ -1,19 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
 import styled from 'styled-components';
+import { getUser } from '../services/supabaseService';
+import { Post } from '../types/Post';
+import { User } from '@supabase/supabase-js';
 
 const PostsPage: React.FC = () => {
-  const [posts, setPosts] = useState<any[]>([]);
+  const [posts, setPosts] = useState<Post[]>([]);
   const [newPostTitle, setNewPostTitle] = useState('');
   const [newPostContent, setNewPostContent] = useState('');
   const [newCommentContent, setNewCommentContent] = useState<{ [postId: string]: string }>({});
   const [showAddPostButton, setShowAddPostButton] = useState(false);
-  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [currentUser, setCurrentUser] = useState<User>(null);
 
   // Pobierz obecnego użytkownika
   useEffect(() => {
     const fetchCurrentUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await getUser();
       setCurrentUser(user);
     };
 
@@ -40,7 +43,7 @@ const PostsPage: React.FC = () => {
 
   // Dodaj nowy post
   const handleAddPost = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const user = await getUser();
 
     if (!user) {
       alert('Musisz być zalogowany, aby dodać post.');
@@ -69,7 +72,7 @@ const PostsPage: React.FC = () => {
 
   // Usuń post
   const handleDeletePost = async (postId: string) => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const user = await getUser();
 
     if (!user) {
       alert('Musisz być zalogowany, aby usunąć post.');
@@ -92,7 +95,7 @@ const PostsPage: React.FC = () => {
 
   // Dodaj komentarz do posta
   const handleAddComment = async (postId: string) => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const user = await getUser();
 
     if (!user) {
       alert('Musisz być zalogowany, aby dodać komentarz.');
@@ -162,7 +165,7 @@ const PostsPage: React.FC = () => {
             {/* Komentarze do posta */}
             <CommentsSection>
               <h3>Komentarze:</h3>
-              {post.comments?.map((comment: any) => (
+              {post.comments?.map(comment => (
                 <CommentCard key={comment.id}>
                   <p><strong>{comment.user?.username}:</strong> {comment.content}</p>
                 </CommentCard>

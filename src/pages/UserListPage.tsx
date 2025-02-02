@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
 import styled from 'styled-components';
+import { User } from '@supabase/supabase-js';
 
 const UserListPage: React.FC = () => {
-  const [users, setUsers] = useState<any[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
 
   // Pobierz użytkowników z bazy danych

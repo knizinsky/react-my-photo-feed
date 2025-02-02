@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import styled from 'styled-components';
 import { UserResponse } from '@supabase/supabase-js';
+import { getUser, signOut } from '../services/supabaseService';
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
@@ -12,7 +13,7 @@ const Header: React.FC = () => {
 
   useEffect(() => {
     const fetchUserData = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await getUser();
       
       if (user) {
         setUser(user);
@@ -34,7 +35,7 @@ const Header: React.FC = () => {
   }, []);
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
+    await signOut();
     navigate('/auth');
   };
 
@@ -42,6 +43,7 @@ const Header: React.FC = () => {
     <HeaderContainer>
       <Nav>
         <NavLinks>
+          <StyledLink to="/feed">Social Photo</StyledLink> <span> | </span>
           <StyledLink to="/feed">Feed</StyledLink>
           <StyledLink to="/user">Profile</StyledLink>
           <StyledLink to="/posts">Posts</StyledLink>

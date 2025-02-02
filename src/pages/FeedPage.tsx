@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
 import styled from 'styled-components';
+import { fetchAlbums, fetchPhotos, getUser } from '../services/supabaseService';
+import { Photo } from '../types/Photo';
 
 const FeedPage: React.FC = () => {
-  const [photos, setPhotos] = useState<any[]>([]);
-  const [albums, setAlbums] = useState<any[]>([]);
+  const [photos, setPhotos] = useState<Photo[]>([]);
+  const [albums, setAlbums] = useState<[]>([]);
   const [filterUser, setFilterUser] = useState('');
   const [newPhotoFile, setNewPhotoFile] = useState<File | null>(null); // Plik zdjęcia
   const [newPhotoDescription, setNewPhotoDescription] = useState('');
@@ -16,7 +18,7 @@ const FeedPage: React.FC = () => {
 
   useEffect(() => {
     const fetchUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const user = await getUser();
       if (user) {
         setUserId(user.id);
       }
@@ -26,24 +28,14 @@ const FeedPage: React.FC = () => {
   }, []);
 
   const fetchPhotosAndAlbums = async () => {
-    const query = supabase
-      .from('photos')
-      .select('*, albums!photos_album_id_fkey(name), users!photos_user_id_fkey(username)');
-
-    const { data: photos, error: photosError } = await query;
-
-    if (photosError) {
-      console.error('Error fetching photos:', photosError);
-    } else {
+    try {
+      const photos = await fetchPhotos();
       setPhotos(photos);
-    }
 
-    const { data: albums, error: albumsError } = await supabase.from('albums').select('*');
-
-    if (albumsError) {
-      console.error('Error fetching albums:', albumsError);
-    } else {
+      const albums = await fetchAlbums();
       setAlbums(albums);
+    } catch (error) {
+      console.error('Error fetching data:', error);
     }
   };
 
@@ -52,7 +44,7 @@ const FeedPage: React.FC = () => {
   }, []);
 
   const handleAddPhoto = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const user = await getUser();
 
     if (!user) {
       alert('Musisz być zalogowany, aby dodać zdjęcie.');
@@ -70,26 +62,17 @@ const FeedPage: React.FC = () => {
       const fileName = `${user.id}-${Date.now()}.${fileExt}`;
       const filePath = `${fileName}`;
 
-      console.log('handleAddPhoto > filePath:', filePath);
       const { error: uploadError } = await supabase.storage
         .from('photos') // Nazwa bucketu w Supabase Storage
         .upload(filePath, newPhotoFile);
 
-        console.log('handleAddPhoto > uploadError:', uploadError);
-        console.log('handleAddPhoto > user.id:', user.id);
-      // if (uploadError) {
-      //   console.log('handleAddPhoto > user.id:', user.id);
-      //   throw uploadError;
-      // }
 
-      console.log('handleAddPhoto > user.id:', user.id);
       // Pobierz publiczny URL przesłanego pliku
       const { data: { publicUrl } } = supabase.storage
         .from('photos')
         .getPublicUrl(filePath);
 
       // Dodaj zdjęcie do tabeli `photos`
-      console.log('handleAddPhoto > user.id:', user.id);
       const { data, error } = await supabase
         .from('photos')
         .insert([{ url: publicUrl, description: newPhotoDescription, album_id: selectedAlbum, user_id: user.id }]);
@@ -111,7 +94,7 @@ const FeedPage: React.FC = () => {
   };
 
   const handleAddAlbum = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const user = await getUser();
 
     if (!user) {
       alert('Musisz być zalogowany, aby dodać album.');
@@ -137,7 +120,7 @@ const FeedPage: React.FC = () => {
   };
 
   const handleDeletePhoto = async (photoId: string) => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const user = await getUser();
 
     if (!user) {
       alert('Musisz być zalogowany, aby usunąć zdjęcie.');
@@ -220,7 +203,6 @@ const FeedPage: React.FC = () => {
       </AddPhotoSection>
 
       <PhotoGrid>
-      {console.log('photos:', photos)}
         {photos.map((photo) => (
           filterUser ? photo.users?.username.toLowerCase().includes(filterUser.toLowerCase()) ? (
             <PhotoCard key={photo.id}>
