@@ -6,6 +6,7 @@ const UserPage: React.FC = () => {
   const [user, setUser] = useState<any>(null);
   const [username, setUsername] = useState('');
   const [avatarUrl, setAvatarUrl] = useState('');
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [photos, setPhotos] = useState<any[]>([]);
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -29,19 +30,11 @@ const UserPage: React.FC = () => {
           setAvatarUrl(userData.avatar_url || '');
         }
 
-        const { data: photos, error: photosError } = await supabase
-          .from('photos')
-          .select('*')
-          .eq('user_id', user.id);
-        
-        if (!photosError) setPhotos(photos);
+        const { data: photos } = await supabase.from('photos').select('*').eq('user_id', user.id);
+        if (photos) setPhotos(photos);
 
-        const { data: posts, error: postsError } = await supabase
-          .from('posts')
-          .select('*')
-          .eq('user_id', user.id);
-        
-        if (!postsError) setPosts(posts);
+        const { data: posts } = await supabase.from('posts').select('*').eq('user_id', user.id);
+        if (posts) setPosts(posts);
       }
 
       setLoading(false);
@@ -50,17 +43,48 @@ const UserPage: React.FC = () => {
     fetchUserData();
   }, []);
 
+  const handleAvatarUpload = async () => {
+    if (!avatarFile || !user) return;
+
+    try {
+      const fileExt = avatarFile.name.split('.').pop();
+      const fileName = `${user.id}-avatar.${fileExt}`;
+      const filePath = `avatars/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('avatars') // Bucket 'avatars' musi istnieć
+        .upload(filePath, avatarFile, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      const { data } = supabase.storage.from('avatars').getPublicUrl(filePath);
+      return data.publicUrl;
+    } catch (error) {
+      console.error('Error uploading avatar:', error);
+      alert('Błąd podczas przesyłania avatara.');
+      return null;
+    }
+  };
+
   const handleUpdateProfile = async () => {
     if (!user) return;
 
+    let newAvatarUrl = avatarUrl;
+
+    if (avatarFile) {
+      newAvatarUrl = await handleAvatarUpload();
+      if (!newAvatarUrl) return;
+    }
+
     try {
-      const { error: dbError } = await supabase
+      const { error } = await supabase
         .from('users')
-        .update({ username, avatar_url: avatarUrl })
+        .update({ username, avatar_url: newAvatarUrl })
         .eq('id', user.id);
 
-      if (dbError) throw dbError;
+      if (error) throw error;
 
+      setAvatarUrl(newAvatarUrl);
       alert('Profil zaktualizowany pomyślnie!');
       setIsEditing(false);
     } catch (error) {
@@ -79,7 +103,9 @@ const UserPage: React.FC = () => {
         <h2>Informacje o użytkowniku</h2>
         <p><strong>Email:</strong> {user.email}</p>
         <p><strong>User name:</strong> {username}</p>
-        <p><strong>Avatar:</strong> <img className='user-avatar' src={avatarUrl} alt='Avatar' /></p>
+        <p><strong>Avatar:</strong></p>
+        <img className='user-avatar' src={avatarUrl || '/default-user-avatar.jpg'} alt='Avatar' />
+        
         {isEditing && (
           <>
             <input
@@ -89,10 +115,9 @@ const UserPage: React.FC = () => {
               onChange={(e) => setUsername(e.target.value)}
             />
             <input
-              type='text'
-              placeholder='URL avatara'
-              value={avatarUrl}
-              onChange={(e) => setAvatarUrl(e.target.value)}
+              type='file'
+              accept='image/*'
+              onChange={(e) => setAvatarFile(e.target.files?.[0] || null)}
             />
             <button onClick={handleUpdateProfile}>Zapisz zmiany</button>
           </>
@@ -129,6 +154,7 @@ const UserPage: React.FC = () => {
 
 export default UserPage;
 
+// Stylizacja
 const Container = styled.div`
   padding: 20px;
 `;
@@ -160,9 +186,11 @@ const ProfileSection = styled.div`
   }
 
   .user-avatar {
-    width: 60px;
-    height: 60px;
+    width: 100px;
+    height: 100px;
     border-radius: 50%;
+    object-fit: cover;
+    margin-top: 10px;
   }
 `;
 

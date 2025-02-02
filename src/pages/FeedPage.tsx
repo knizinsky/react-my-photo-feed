@@ -6,7 +6,7 @@ const FeedPage: React.FC = () => {
   const [photos, setPhotos] = useState<any[]>([]);
   const [albums, setAlbums] = useState<any[]>([]);
   const [filterUser, setFilterUser] = useState('');
-  const [newPhotoUrl, setNewPhotoUrl] = useState('');
+  const [newPhotoFile, setNewPhotoFile] = useState<File | null>(null); // Plik zdjęcia
   const [newPhotoDescription, setNewPhotoDescription] = useState('');
   const [selectedAlbum, setSelectedAlbum] = useState('');
   const [newAlbumName, setNewAlbumName] = useState('');
@@ -59,24 +59,54 @@ const FeedPage: React.FC = () => {
       return;
     }
 
-    if (!newPhotoUrl || !selectedAlbum) {
-      alert('Proszę wypełnić wszystkie pola.');
+    if (!newPhotoFile || !selectedAlbum) {
+      alert('Proszę wybrać plik i album.');
       return;
     }
 
-    const { data, error } = await supabase
-      .from('photos')
-      .insert([{ url: newPhotoUrl, description: newPhotoDescription, album_id: selectedAlbum, user_id: user.id }]);
+    try {
+      // Prześlij plik do Supabase Storage
+      const fileExt = newPhotoFile.name.split('.').pop();
+      const fileName = `${user.id}-${Date.now()}.${fileExt}`;
+      const filePath = `${fileName}`;
 
-    if (error) {
-      console.error('Error adding photo:', error);
-    } else {
+      console.log('handleAddPhoto > filePath:', filePath);
+      const { error: uploadError } = await supabase.storage
+        .from('photos') // Nazwa bucketu w Supabase Storage
+        .upload(filePath, newPhotoFile);
+
+        console.log('handleAddPhoto > uploadError:', uploadError);
+        console.log('handleAddPhoto > user.id:', user.id);
+      // if (uploadError) {
+      //   console.log('handleAddPhoto > user.id:', user.id);
+      //   throw uploadError;
+      // }
+
+      console.log('handleAddPhoto > user.id:', user.id);
+      // Pobierz publiczny URL przesłanego pliku
+      const { data: { publicUrl } } = supabase.storage
+        .from('photos')
+        .getPublicUrl(filePath);
+
+      // Dodaj zdjęcie do tabeli `photos`
+      console.log('handleAddPhoto > user.id:', user.id);
+      const { data, error } = await supabase
+        .from('photos')
+        .insert([{ url: publicUrl, description: newPhotoDescription, album_id: selectedAlbum, user_id: user.id }]);
+
+      if (error) {
+        throw error;
+      }
+
       // Po dodaniu zdjęcia, ponownie pobierz zdjęcia z bazy danych
       await fetchPhotosAndAlbums();
-      setNewPhotoUrl('');
+      setNewPhotoFile(null);
       setNewPhotoDescription('');
       setSelectedAlbum('');
       setShowAddPhotoForm(false);
+    } catch (error) {
+      console.error('Error adding photo:', error);
+      alert('Wystąpił błąd podczas dodawania zdjęcia.');
     }
   };
 
@@ -165,10 +195,9 @@ const FeedPage: React.FC = () => {
           <>
             <h2>Dodaj nowe zdjęcie</h2>
             <input
-              type="text"
-              placeholder="URL zdjęcia"
-              value={newPhotoUrl}
-              onChange={(e) => setNewPhotoUrl(e.target.value)}
+              type="file"
+              accept="image/*"
+              onChange={(e) => setNewPhotoFile(e.target.files?.[0] || null)}
             />
             <input
               type="text"
@@ -191,23 +220,27 @@ const FeedPage: React.FC = () => {
       </AddPhotoSection>
 
       <PhotoGrid>
+      {console.log('photos:', photos)}
         {photos.map((photo) => (
-          filterUser ? photo.users?.username.toLowerCase().includes(filterUser.toLowerCase()) ? (<PhotoCard key={photo.id}>
-            <img src={photo.url} alt={photo.description} />
-            <p>{photo.description}</p>
-            <p>Album: {photo.albums?.name}</p>
-            <p>Autor: {photo.users?.username}</p>
-            <button onClick={() => handleDeletePhoto(photo.id)}>Usuń</button>
-          </PhotoCard>) : '' :
-          (<PhotoCard key={photo.id}>
-            <img src={photo.url} alt={photo.description} />
-            <p>{photo.description}</p>
-            <p>Album: {photo.albums?.name}</p>
-            <p>Autor: {photo.users?.username}</p>
-            {userId === photo.user_id && (
+          filterUser ? photo.users?.username.toLowerCase().includes(filterUser.toLowerCase()) ? (
+            <PhotoCard key={photo.id}>
+              <img src={photo.url} alt={photo.description} />
+              <p>{photo.description}</p>
+              <p>Album: {photo.albums?.name}</p>
+              <p>Autor: {photo.users?.username}</p>
+              <button onClick={() => handleDeletePhoto(photo.id)}>Usuń</button>
+            </PhotoCard>
+          ) : '' : (
+            <PhotoCard key={photo.id}>
+              <img src={photo.url} alt={photo.description} />
+              <p>{photo.description}</p>
+              <p>Album: {photo.albums?.name}</p>
+              <p>Autor: {photo.users?.username}</p>
+              {userId === photo.user_id && (
                 <button onClick={() => handleDeletePhoto(photo.id)}>Usuń</button>
               )}
-          </PhotoCard>)
+            </PhotoCard>
+          )
         ))}
       </PhotoGrid>
     </Container>
