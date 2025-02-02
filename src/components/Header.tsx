@@ -26,6 +26,12 @@ const Header: React.FC = () => {
         <Link to="/user" style={{ margin: '0 1rem', color: 'white', textDecoration: 'none' }}>
           Profile
         </Link>
+        <Link to="/posts" style={{ margin: '0 1rem', color: 'white', textDecoration: 'none' }}>
+          Posts
+        </Link>
+        <Link to="/user-list" style={{ margin: '0 1rem', color: 'white', textDecoration: 'none' }}>
+          Users
+        </Link>
         <button
           onClick={handleLogout}
           style={{

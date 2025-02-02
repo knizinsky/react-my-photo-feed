@@ -10,6 +10,9 @@ import NotFoundPage from './pages/NotFoundPage';
 import FoldersPage from './pages/FoldersPage';
 import AddPhotoPage from './pages/AddPhotoPage';
 import DeletePhotoPage from './pages/DeletePhotoPage';
+import UserListPage from './pages/UserListPage';
+import ImageListPage from './pages/ImageListPage';
+import PostsPage from './pages/PostsPage';
 
 const CheckSession: React.FC = () => {
   const navigate = useNavigate();
@@ -52,31 +55,31 @@ const App: React.FC = () => {
           }
         />
         <Route
-          path="/folders"
+          path="/user-list"
           element={
             <PrivateRoute>
               <Layout>
-                <FoldersPage />
+                <UserListPage />
               </Layout>
             </PrivateRoute>
           }
         />
         <Route
-          path="/add-photo"
+          path="/image-list"
           element={
             <PrivateRoute>
               <Layout>
-                <AddPhotoPage />
+                <ImageListPage />
               </Layout>
             </PrivateRoute>
           }
         />
         <Route
-          path="/delete-photo"
+          path="/posts"
           element={
             <PrivateRoute>
               <Layout>
-                <DeletePhotoPage />
+                <PostsPage />
               </Layout>
             </PrivateRoute>
           }

@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import styled from 'styled-components';
-import { AuthTokenResponsePassword } from '@supabase/supabase-js';
 
 const AuthPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [username, setUsername] = useState(''); // Dodane pole username
   const [error, setError] = useState('');
   const [isLogin, setIsLogin] = useState(true);
   const navigate = useNavigate();
@@ -15,20 +15,28 @@ const AuthPage: React.FC = () => {
     try {
       setError('');
       if (isLogin) {
+        // Logowanie
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
       } else {
-        const { error } = await supabase.auth.signUp({ email, password });
+        // Rejestracja
+        const { data, error } = await supabase.auth.signUp({ email, password });
         if (error) throw error;
+
+        // Dodaj użytkownika do tabeli `users`
+        if (data.user) {
+          const { error: insertError } = await supabase
+            .from('users')
+            .insert([{ id: data.user.id, email: data.user.email, username, created_at: new Date().toISOString() }]);
+
+          if (insertError) throw insertError;
+        }
       }
 
+      // Przekierowanie po pomyślnym zalogowaniu/rejestracji
       navigate('/feed');
-    } catch (err: AuthTokenResponsePassword | unknown) {
-      if (err instanceof ErrorEvent) {
-        setError(err.message);
-      } else {
-        setError('An unknown error occurred');
-      }
+    } catch (err) {
+      setError(err.message);
     }
   };
 
@@ -36,6 +44,14 @@ const AuthPage: React.FC = () => {
     <Container>
       <Form>
         <h2>{isLogin ? 'Logowanie' : 'Rejestracja'}</h2>
+        {!isLogin && (
+          <input
+            type="text"
+            placeholder="Nazwa użytkownika"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+        )}
         <input
           type="email"
           placeholder="Email"
@@ -60,6 +76,7 @@ const AuthPage: React.FC = () => {
 
 export default AuthPage;
 
+// Stylowanie (bez zmian)
 const Container = styled.div`
   display: flex;
   justify-content: center;

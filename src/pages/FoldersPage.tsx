@@ -7,7 +7,7 @@ const FoldersPage: React.FC = () => {
 
   useEffect(() => {
     const fetchFolders = async () => {
-      let { data: folders, error } = await supabase
+      const { data: folders, error } = await supabase
         .from('folders')
         .select('*');
 
