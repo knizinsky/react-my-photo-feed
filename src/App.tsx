@@ -1,14 +1,19 @@
-import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
-import AuthPage from './pages/AuthPage';
-import PrivateRoute from './components/PrivateRoute';
-import { supabase } from './supabaseClient';
-import Layout from './components/Layout';
-import FeedPage from './pages/FeedPage';
-import UserPage from './pages/UserPage';
-import NotFoundPage from './pages/NotFoundPage';
-import UserListPage from './pages/UserListPage';
-import PostsPage from './pages/PostsPage';
+import React, { useEffect } from "react";
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  useNavigate,
+} from "react-router-dom";
+import AuthPage from "./pages/AuthPage";
+import PrivateRoute from "./components/PrivateRoute";
+import { supabase } from "./supabaseClient";
+import Layout from "./components/Layout";
+import FeedPage from "./pages/FeedPage";
+import UserPage from "./pages/UserPage";
+import NotFoundPage from "./pages/NotFoundPage";
+import UserListPage from "./pages/UserListPage";
+import PostsPage from "./pages/PostsPage";
 
 const CheckSession: React.FC = () => {
   const navigate = useNavigate();

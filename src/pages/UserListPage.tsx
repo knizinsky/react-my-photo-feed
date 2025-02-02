@@ -1,26 +1,26 @@
-import React, { useEffect, useState } from 'react';
-import { supabase } from '../supabaseClient';
-import styled from 'styled-components';
-import { User } from '@supabase/supabase-js';
+import React, { useEffect, useState } from "react";
+import { supabase } from "../supabaseClient";
+import styled from "styled-components";
+import { User } from "@supabase/supabase-js";
 
 const UserListPage: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
 
   // Pobierz użytkowników z bazy danych
   useEffect(() => {
     const fetchUsers = async () => {
-      let query = supabase.from('users').select('*');
+      let query = supabase.from("users").select("*");
 
       // Filtruj użytkowników po nazwie, jeśli wpisano wartość w wyszukiwarkę
       if (searchTerm) {
-        query = query.ilike('username', `%${searchTerm}%`);
+        query = query.ilike("username", `%${searchTerm}%`);
       }
 
       const { data, error } = await query;
 
       if (error) {
-        console.error('Error fetching users:', error);
+        console.error("Error fetching users:", error);
       } else {
         setUsers(data);
       }
@@ -47,9 +47,16 @@ const UserListPage: React.FC = () => {
       <UserList>
         {users.map((user) => (
           <UserCard key={user.id}>
-            <p><strong>Nazwa użytkownika:</strong> {user.username}</p>
-            <p><strong>Email:</strong> {user.email}</p>
-            <p><strong>Data rejestracji:</strong> {new Date(user.created_at).toLocaleDateString()}</p>
+            <p>
+              <strong>Nazwa użytkownika:</strong> {user.username}
+            </p>
+            <p>
+              <strong>Email:</strong> {user.email}
+            </p>
+            <p>
+              <strong>Data rejestracji:</strong>{" "}
+              {new Date(user.created_at).toLocaleDateString()}
+            </p>
           </UserCard>
         ))}
       </UserList>

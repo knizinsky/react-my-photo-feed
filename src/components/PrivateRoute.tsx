@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { Navigate } from 'react-router-dom';
-import { getSession } from '../services/supabaseService';
-import { PrivateRouteProps } from '../types/PrivateRouteProps';
+import React, { useEffect, useState } from "react";
+import { Navigate } from "react-router-dom";
+import { getSession } from "../services/supabaseService";
+import { PrivateRouteProps } from "../types/PrivateRouteProps";
 
 const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
@@ -13,7 +13,7 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
       if (session) {
         setIsAuthenticated(true);
       } else {
-        setIsAuthenticated(false); 
+        setIsAuthenticated(false);
       }
     };
 
@@ -30,6 +30,5 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
 
   return children;
 };
-
 
 export default PrivateRoute;

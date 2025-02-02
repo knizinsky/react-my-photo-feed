@@ -1,12 +1,12 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React from "react";
+import { Link } from "react-router-dom";
 
-const NotFoundPage: React.FC = () => {
+const NotFoundPage = () => {
   return (
-    <div>
-      <h1>404 - Page Not Found</h1>
+    <>
+      <h2>404 - Page Not Found</h2>
       <Link to="/feed">Go back to Feed</Link>
-    </div>
+    </>
   );
 };
 

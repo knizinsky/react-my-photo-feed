@@ -1,3 +1,3 @@
 export interface PrivateRouteProps {
-    children: JSX.Element;
-  }
+  children: JSX.Element;
+}

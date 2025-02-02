@@ -1,32 +1,32 @@
-import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { supabase } from '../supabaseClient';
-import styled from 'styled-components';
-import { UserResponse } from '@supabase/supabase-js';
-import { getUser, signOut } from '../services/supabaseService';
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { supabase } from "../supabaseClient";
+import styled from "styled-components";
+import { UserResponse } from "@supabase/supabase-js";
+import { getUser, signOut } from "../services/supabaseService";
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<UserResponse>(null);
-  const [username, setUsername] = useState('');
-  const [avatarUrl, setAvatarUrl] = useState('');
+  const [username, setUsername] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState("");
 
   useEffect(() => {
     const fetchUserData = async () => {
       const user = await getUser();
-      
+
       if (user) {
         setUser(user);
-        
+
         const { data: userData } = await supabase
-          .from('users')
-          .select('username, avatar_url')
-          .eq('id', user.id)
+          .from("users")
+          .select("username, avatar_url")
+          .eq("id", user.id)
           .single();
 
         if (userData) {
-          setUsername(userData.username || 'Użytkownik');
-          setAvatarUrl(userData.avatar_url || '');
+          setUsername(userData.username || "Użytkownik");
+          setAvatarUrl(userData.avatar_url || "");
         }
       }
     };
@@ -36,7 +36,7 @@ const Header: React.FC = () => {
 
   const handleLogout = async () => {
     await signOut();
-    navigate('/auth');
+    navigate("/auth");
   };
 
   return (
@@ -49,10 +49,13 @@ const Header: React.FC = () => {
           <StyledLink to="/posts">Posts</StyledLink>
           <StyledLink to="/user-list">Users</StyledLink>
         </NavLinks>
-        
+
         {user ? (
           <UserSection>
-            <Avatar src={avatarUrl || '/default-user-avatar.jpg'} alt="User Avatar" />
+            <Avatar
+              src={avatarUrl || "/default-user-avatar.jpg"}
+              alt="User Avatar"
+            />
             <Username>{username}</Username>
             <LogoutButton onClick={handleLogout}>Logout</LogoutButton>
           </UserSection>

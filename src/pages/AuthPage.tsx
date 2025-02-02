@@ -1,40 +1,46 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { supabase } from '../supabaseClient';
-import styled from 'styled-components';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "../supabaseClient";
+import styled from "styled-components";
 
 const AuthPage: React.FC = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [username, setUsername] = useState(''); // Dodane pole username
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("");
+  const [error, setError] = useState("");
   const [isLogin, setIsLogin] = useState(true);
   const navigate = useNavigate();
 
   const handleAuth = async () => {
     try {
-      setError('');
+      setError("");
       if (isLogin) {
-        // Logowanie
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
         if (error) throw error;
       } else {
-        // Rejestracja
         const { data, error } = await supabase.auth.signUp({ email, password });
         if (error) throw error;
 
-        // Dodaj użytkownika do tabeli `users`
         if (data.user) {
           const { error: insertError } = await supabase
-            .from('users')
-            .insert([{ id: data.user.id, email: data.user.email, username, created_at: new Date().toISOString() }]);
+            .from("users")
+            .insert([
+              {
+                id: data.user.id,
+                email: data.user.email,
+                username,
+                created_at: new Date().toISOString(),
+              },
+            ]);
 
           if (insertError) throw insertError;
         }
       }
 
-      // Przekierowanie po pomyślnym zalogowaniu/rejestracji
-      navigate('/feed');
+      navigate("/feed");
     } catch (err) {
       setError(err.message);
     }
@@ -43,7 +49,7 @@ const AuthPage: React.FC = () => {
   return (
     <Container>
       <Form>
-        <h2>{isLogin ? 'Logowanie' : 'Rejestracja'}</h2>
+        <h2>{isLogin ? "Logowanie" : "Rejestracja"}</h2>
         {!isLogin && (
           <input
             type="text"
@@ -65,9 +71,13 @@ const AuthPage: React.FC = () => {
           onChange={(e) => setPassword(e.target.value)}
         />
         {error && <Error>{error}</Error>}
-        <button onClick={handleAuth}>{isLogin ? 'Zaloguj się' : 'Zarejestruj się'}</button>
+        <button onClick={handleAuth}>
+          {isLogin ? "Zaloguj się" : "Zarejestruj się"}
+        </button>
         <Toggle onClick={() => setIsLogin(!isLogin)}>
-          {isLogin ? 'Nie masz konta? Zarejestruj się!' : 'Masz już konto? Zaloguj się!'}
+          {isLogin
+            ? "Nie masz konta? Zarejestruj się!"
+            : "Masz już konto? Zaloguj się!"}
         </Toggle>
       </Form>
     </Container>
@@ -76,7 +86,6 @@ const AuthPage: React.FC = () => {
 
 export default AuthPage;
 
-// Stylowanie (bez zmian)
 const Container = styled.div`
   display: flex;
   justify-content: center;

@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { supabase } from '../supabaseClient';
-import styled from 'styled-components';
-import { getUser } from '../services/supabaseService';
-import { User } from '@supabase/supabase-js';
-import { Photo } from '../types/Photo';
-import { Post } from '../types/Post';
+import React, { useEffect, useState } from "react";
+import { supabase } from "../supabaseClient";
+import styled from "styled-components";
+import { getUser } from "../services/supabaseService";
+import { User } from "@supabase/supabase-js";
+import { Photo } from "../types/Photo";
+import { Post } from "../types/Post";
 
 const UserPage: React.FC = () => {
   const [user, setUser] = useState<User>(null);
-  const [username, setUsername] = useState('');
-  const [avatarUrl, setAvatarUrl] = useState('');
+  const [username, setUsername] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState("");
   const [avatarFile, setAvatarFile] = useState<File>(null);
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [posts, setPosts] = useState<Post[]>([]);
@@ -19,25 +19,31 @@ const UserPage: React.FC = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       const user = await getUser();
-      
+
       if (user) {
         setUser(user);
-        
+
         const { data: userData, error: userError } = await supabase
-          .from('users')
-          .select('username, avatar_url')
-          .eq('id', user.id)
+          .from("users")
+          .select("username, avatar_url")
+          .eq("id", user.id)
           .single();
 
         if (!userError && userData) {
-          setUsername(userData.username || 'Nie ustawiono');
-          setAvatarUrl(userData.avatar_url || '');
+          setUsername(userData.username || "Nie ustawiono");
+          setAvatarUrl(userData.avatar_url || "");
         }
 
-        const { data: photos } = await supabase.from('photos').select('*').eq('user_id', user.id);
+        const { data: photos } = await supabase
+          .from("photos")
+          .select("*")
+          .eq("user_id", user.id);
         if (photos) setPhotos(photos);
 
-        const { data: posts } = await supabase.from('posts').select('*').eq('user_id', user.id);
+        const { data: posts } = await supabase
+          .from("posts")
+          .select("*")
+          .eq("user_id", user.id);
         if (posts) setPosts(posts);
       }
 
@@ -51,21 +57,21 @@ const UserPage: React.FC = () => {
     if (!avatarFile || !user) return;
 
     try {
-      const fileExt = avatarFile.name.split('.').pop();
+      const fileExt = avatarFile.name.split(".").pop();
       const fileName = `${user.id}-avatar.${fileExt}`;
       const filePath = `avatars/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
-        .from('avatars') // Bucket 'avatars' musi istnieć
+        .from("avatars") // Bucket 'avatars' musi istnieć
         .upload(filePath, avatarFile, { upsert: true });
 
       if (uploadError) throw uploadError;
 
-      const { data } = supabase.storage.from('avatars').getPublicUrl(filePath);
+      const { data } = supabase.storage.from("avatars").getPublicUrl(filePath);
       return data.publicUrl;
     } catch (error) {
-      console.error('Error uploading avatar:', error);
-      alert('Błąd podczas przesyłania avatara.');
+      console.error("Error uploading avatar:", error);
+      alert("Błąd podczas przesyłania avatara.");
       return null;
     }
   };
@@ -82,18 +88,18 @@ const UserPage: React.FC = () => {
 
     try {
       const { error } = await supabase
-        .from('users')
+        .from("users")
         .update({ username, avatar_url: newAvatarUrl })
-        .eq('id', user.id);
+        .eq("id", user.id);
 
       if (error) throw error;
 
       setAvatarUrl(newAvatarUrl);
-      alert('Profil zaktualizowany pomyślnie!');
+      alert("Profil zaktualizowany pomyślnie!");
       setIsEditing(false);
     } catch (error) {
-      console.error('Error updating profile:', error);
-      alert('Wystąpił błąd podczas aktualizacji profilu.');
+      console.error("Error updating profile:", error);
+      alert("Wystąpił błąd podczas aktualizacji profilu.");
     }
   };
 
@@ -105,28 +111,40 @@ const UserPage: React.FC = () => {
       <h1>Twój profil</h1>
       <ProfileSection>
         <h2>Informacje o użytkowniku</h2>
-        <p><strong>Email:</strong> {user.email}</p>
-        <p><strong>User name:</strong> {username}</p>
-        <p><strong>Avatar:</strong></p>
-        <img className='user-avatar' src={avatarUrl || '/default-user-avatar.jpg'} alt='Avatar' />
-        
+        <p>
+          <strong>Email:</strong> {user.email}
+        </p>
+        <p>
+          <strong>User name:</strong> {username}
+        </p>
+        <p>
+          <strong>Avatar:</strong>
+        </p>
+        <img
+          className="user-avatar"
+          src={avatarUrl || "/default-user-avatar.jpg"}
+          alt="Avatar"
+        />
+
         {isEditing && (
           <>
             <input
-              type='text'
-              placeholder='Nazwa użytkownika'
+              type="text"
+              placeholder="Nazwa użytkownika"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
             />
             <input
-              type='file'
-              accept='image/*'
+              type="file"
+              accept="image/*"
               onChange={(e) => setAvatarFile(e.target.files?.[0] || null)}
             />
             <button onClick={handleUpdateProfile}>Zapisz zmiany</button>
           </>
         )}
-        {!isEditing && <button onClick={() => setIsEditing(true)}>Aktualizuj profil</button>}
+        {!isEditing && (
+          <button onClick={() => setIsEditing(true)}>Aktualizuj profil</button>
+        )}
       </ProfileSection>
 
       <PhotosSection>

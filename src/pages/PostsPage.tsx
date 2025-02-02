@@ -1,15 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import { supabase } from '../supabaseClient';
-import styled from 'styled-components';
-import { getUser } from '../services/supabaseService';
-import { Post } from '../types/Post';
-import { User } from '@supabase/supabase-js';
+import React, { useEffect, useState } from "react";
+import { supabase } from "../supabaseClient";
+import styled from "styled-components";
+import { getUser } from "../services/supabaseService";
+import { Post } from "../types/Post";
+import { User } from "@supabase/supabase-js";
 
 const PostsPage: React.FC = () => {
   const [posts, setPosts] = useState<Post[]>([]);
-  const [newPostTitle, setNewPostTitle] = useState('');
-  const [newPostContent, setNewPostContent] = useState('');
-  const [newCommentContent, setNewCommentContent] = useState<{ [postId: string]: string }>({});
+  const [newPostTitle, setNewPostTitle] = useState("");
+  const [newPostContent, setNewPostContent] = useState("");
+  const [newCommentContent, setNewCommentContent] = useState<{
+    [postId: string]: string;
+  }>({});
   const [showAddPostButton, setShowAddPostButton] = useState(false);
   const [currentUser, setCurrentUser] = useState<User>(null);
 
@@ -26,11 +28,13 @@ const PostsPage: React.FC = () => {
   // Funkcja do pobierania postów z komentarzami
   const fetchPosts = async () => {
     const { data: posts, error: postsError } = await supabase
-      .from('posts')
-      .select('*, user:users(username), comments:comments(*, user:users(username))');
+      .from("posts")
+      .select(
+        "*, user:users(username), comments:comments(*, user:users(username))"
+      );
 
     if (postsError) {
-      console.error('Error fetching posts:', postsError);
+      console.error("Error fetching posts:", postsError);
     } else {
       setPosts(posts);
     }
@@ -46,26 +50,28 @@ const PostsPage: React.FC = () => {
     const user = await getUser();
 
     if (!user) {
-      alert('Musisz być zalogowany, aby dodać post.');
+      alert("Musisz być zalogowany, aby dodać post.");
       return;
     }
 
     if (!newPostTitle || !newPostContent) {
-      alert('Proszę wypełnić tytuł i treść posta.');
+      alert("Proszę wypełnić tytuł i treść posta.");
       return;
     }
 
     const { data, error } = await supabase
-      .from('posts')
-      .insert([{ title: newPostTitle, content: newPostContent, user_id: user.id }]);
+      .from("posts")
+      .insert([
+        { title: newPostTitle, content: newPostContent, user_id: user.id },
+      ]);
 
     if (error) {
-      console.error('Error adding post:', error);
+      console.error("Error adding post:", error);
     } else {
       // Po dodaniu posta, ponownie pobierz posty z bazy danych
       await fetchPosts();
-      setNewPostTitle('');
-      setNewPostContent('');
+      setNewPostTitle("");
+      setNewPostContent("");
       setShowAddPostButton(false);
     }
   };
@@ -75,18 +81,18 @@ const PostsPage: React.FC = () => {
     const user = await getUser();
 
     if (!user) {
-      alert('Musisz być zalogowany, aby usunąć post.');
+      alert("Musisz być zalogowany, aby usunąć post.");
       return;
     }
 
     const { error } = await supabase
-      .from('posts')
+      .from("posts")
       .delete()
-      .eq('id', postId)
-      .eq('user_id', user.id); // Tylko autor może usunąć post
+      .eq("id", postId)
+      .eq("user_id", user.id); // Tylko autor może usunąć post
 
     if (error) {
-      console.error('Error deleting post:', error);
+      console.error("Error deleting post:", error);
     } else {
       // Po usunięciu posta, ponownie pobierz posty z bazy danych
       await fetchPosts();
@@ -98,26 +104,26 @@ const PostsPage: React.FC = () => {
     const user = await getUser();
 
     if (!user) {
-      alert('Musisz być zalogowany, aby dodać komentarz.');
+      alert("Musisz być zalogowany, aby dodać komentarz.");
       return;
     }
 
     const commentContent = newCommentContent[postId];
     if (!commentContent) {
-      alert('Proszę wpisać treść komentarza.');
+      alert("Proszę wpisać treść komentarza.");
       return;
     }
 
     const { data, error } = await supabase
-      .from('comments')
+      .from("comments")
       .insert([{ post_id: postId, user_id: user.id, content: commentContent }]);
 
     if (error) {
-      console.error('Error adding comment:', error);
+      console.error("Error adding comment:", error);
     } else {
       // Po dodaniu komentarza, ponownie pobierz posty z bazy danych
       await fetchPosts();
-      setNewCommentContent({ ...newCommentContent, [postId]: '' });
+      setNewCommentContent({ ...newCommentContent, [postId]: "" });
     }
   };
 
@@ -155,19 +161,25 @@ const PostsPage: React.FC = () => {
           <PostCard key={post.id}>
             <h2>{post.title}</h2>
             <p>{post.content}</p>
-            <p><strong>Autor:</strong> {post.user?.username}</p>
+            <p>
+              <strong>Autor:</strong> {post.user?.username}
+            </p>
 
             {/* Przycisk usuwania posta (tylko dla autora) */}
             {currentUser && post.user_id === currentUser.id && (
-              <button onClick={() => handleDeletePost(post.id)}>Usuń post</button>
+              <button onClick={() => handleDeletePost(post.id)}>
+                Usuń post
+              </button>
             )}
 
             {/* Komentarze do posta */}
             <CommentsSection>
               <h3>Komentarze:</h3>
-              {post.comments?.map(comment => (
+              {post.comments?.map((comment) => (
                 <CommentCard key={comment.id}>
-                  <p><strong>{comment.user?.username}:</strong> {comment.content}</p>
+                  <p>
+                    <strong>{comment.user?.username}:</strong> {comment.content}
+                  </p>
                 </CommentCard>
               ))}
 
@@ -175,12 +187,17 @@ const PostsPage: React.FC = () => {
               <AddCommentSection>
                 <textarea
                   placeholder="Dodaj komentarz"
-                  value={newCommentContent[post.id] || ''}
+                  value={newCommentContent[post.id] || ""}
                   onChange={(e) =>
-                    setNewCommentContent({ ...newCommentContent, [post.id]: e.target.value })
+                    setNewCommentContent({
+                      ...newCommentContent,
+                      [post.id]: e.target.value,
+                    })
                   }
                 />
-                <button onClick={() => handleAddComment(post.id)}>Dodaj komentarz</button>
+                <button onClick={() => handleAddComment(post.id)}>
+                  Dodaj komentarz
+                </button>
               </AddCommentSection>
             </CommentsSection>
           </PostCard>
@@ -200,7 +217,8 @@ const Container = styled.div`
 const AddPostSection = styled.div`
   margin-bottom: 20px;
 
-  input, textarea {
+  input,
+  textarea {
     display: block;
     margin-bottom: 10px;
     padding: 10px;
