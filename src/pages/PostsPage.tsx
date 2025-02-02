@@ -20,22 +20,23 @@ const PostsPage: React.FC = () => {
     fetchCurrentUser();
   }, []);
 
-  // Pobierz posty z komentarzami i informacjami o autorze
+  // Funkcja do pobierania postów z komentarzami
+  const fetchPosts = async () => {
+    const { data: posts, error: postsError } = await supabase
+      .from('posts')
+      .select('*, user:users(username), comments:comments(*, user:users(username))');
+
+    if (postsError) {
+      console.error('Error fetching posts:', postsError);
+    } else {
+      setPosts(posts);
+    }
+  };
+
+  // Pobierz posty przy pierwszym renderowaniu
   useEffect(() => {
-    const fetchPosts = async () => {
-      const { data: posts, error: postsError } = await supabase
-        .from('posts')
-        .select('*, user:users(username), comments:comments(*, user:users(username))');
-
-      if (postsError) {
-        console.error('Error fetching posts:', postsError);
-      } else {
-        setPosts(posts);
-      }
-    };
-
     fetchPosts();
-  }, [posts]);
+  }, []);
 
   // Dodaj nowy post
   const handleAddPost = async () => {
@@ -58,9 +59,11 @@ const PostsPage: React.FC = () => {
     if (error) {
       console.error('Error adding post:', error);
     } else {
-      setPosts([...posts, ...data]);
+      // Po dodaniu posta, ponownie pobierz posty z bazy danych
+      await fetchPosts();
       setNewPostTitle('');
       setNewPostContent('');
+      setShowAddPostButton(false);
     }
   };
 
@@ -82,7 +85,8 @@ const PostsPage: React.FC = () => {
     if (error) {
       console.error('Error deleting post:', error);
     } else {
-      setPosts(posts.filter((post) => post.id !== postId));
+      // Po usunięciu posta, ponownie pobierz posty z bazy danych
+      await fetchPosts();
     }
   };
 
@@ -108,17 +112,8 @@ const PostsPage: React.FC = () => {
     if (error) {
       console.error('Error adding comment:', error);
     } else {
-      // Zaktualizuj post z nowym komentarzem
-      const updatedPosts = posts.map((post) => {
-        if (post.id === postId) {
-          return {
-            ...post,
-            comments: [...post.comments, ...data],
-          };
-        }
-        return post;
-      });
-      setPosts(updatedPosts);
+      // Po dodaniu komentarza, ponownie pobierz posty z bazy danych
+      await fetchPosts();
       setNewCommentContent({ ...newCommentContent, [postId]: '' });
     }
   };

@@ -10,8 +10,8 @@ const FeedPage: React.FC = () => {
   const [newPhotoDescription, setNewPhotoDescription] = useState('');
   const [selectedAlbum, setSelectedAlbum] = useState('');
   const [newAlbumName, setNewAlbumName] = useState('');
-  const [showAddAlbumForm, setShowAddAlbumForm] = useState(false); // Stan do pokazywania/ukrywania formularza albumu
-  const [showAddPhotoForm, setShowAddPhotoForm] = useState(false); // Stan do pokazywania/ukrywania formularza zdjęcia
+  const [showAddAlbumForm, setShowAddAlbumForm] = useState(false);
+  const [showAddPhotoForm, setShowAddPhotoForm] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -25,37 +25,32 @@ const FeedPage: React.FC = () => {
     fetchUser();
   }, []);
 
-  // Pobierz zdjęcia i albumy
+  const fetchPhotosAndAlbums = async () => {
+    const query = supabase
+      .from('photos')
+      .select('*, albums!photos_album_id_fkey(name), users!photos_user_id_fkey(username)');
+
+    const { data: photos, error: photosError } = await query;
+
+    if (photosError) {
+      console.error('Error fetching photos:', photosError);
+    } else {
+      setPhotos(photos);
+    }
+
+    const { data: albums, error: albumsError } = await supabase.from('albums').select('*');
+
+    if (albumsError) {
+      console.error('Error fetching albums:', albumsError);
+    } else {
+      setAlbums(albums);
+    }
+  };
+
   useEffect(() => {
-    const fetchPhotosAndAlbums = async () => {
-      // Pobierz zdjęcia wraz z informacjami o albumie i autorze zdjęcia
-      const query = supabase
-        .from('photos')
-        .select('*, albums!photos_album_id_fkey(name), users!photos_user_id_fkey(username)');
-
-  
-      const { data: photos, error: photosError } = await query;
-  
-      if (photosError) {
-        console.error('Error fetching photos:', photosError);
-      } else {
-        setPhotos(photos);
-      }
-  
-      // Pobierz albumy
-      const { data: albums, error: albumsError } = await supabase.from('albums').select('*');
-  
-      if (albumsError) {
-        console.error('Error fetching albums:', albumsError);
-      } else {
-        setAlbums(albums);
-      }
-    };
-  
     fetchPhotosAndAlbums();
-  }, [photos]);
+  }, []);
 
-  // Dodaj nowe zdjęcie
   const handleAddPhoto = async () => {
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -76,15 +71,15 @@ const FeedPage: React.FC = () => {
     if (error) {
       console.error('Error adding photo:', error);
     } else {
-      setPhotos([...photos, ...data]);
+      // Po dodaniu zdjęcia, ponownie pobierz zdjęcia z bazy danych
+      await fetchPhotosAndAlbums();
       setNewPhotoUrl('');
       setNewPhotoDescription('');
       setSelectedAlbum('');
-      setShowAddPhotoForm(false); // Ukryj formularz po dodaniu zdjęcia
+      setShowAddPhotoForm(false);
     }
   };
 
-  // Dodaj nowy album
   const handleAddAlbum = async () => {
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -107,11 +102,10 @@ const FeedPage: React.FC = () => {
     } else {
       setAlbums([...albums, ...data]);
       setNewAlbumName('');
-      setShowAddAlbumForm(false); // Ukryj formularz po dodaniu albumu
+      setShowAddAlbumForm(false);
     }
   };
 
-  // Usuń zdjęcie
   const handleDeletePhoto = async (photoId: string) => {
     const { data: { user } } = await supabase.auth.getUser();
 
@@ -124,7 +118,7 @@ const FeedPage: React.FC = () => {
       .from('photos')
       .delete()
       .eq('id', photoId)
-      .eq('user_id', user.id); // Tylko właściciel może usunąć zdjęcie
+      .eq('user_id', user.id);
 
     if (error) {
       console.error('Error deleting photo:', error);
@@ -137,7 +131,6 @@ const FeedPage: React.FC = () => {
     <Container>
       <h1>Feed</h1>
 
-      {/* Filtrowanie po użytkowniku */}
       <FilterSection>
         <input
           type="text"
@@ -147,7 +140,6 @@ const FeedPage: React.FC = () => {
         />
       </FilterSection>
 
-      {/* Przycisk i formularz dodawania albumu */}
       <AddAlbumSection>
         {!showAddAlbumForm ? (
           <button onClick={() => setShowAddAlbumForm(true)}>Dodaj album</button>
@@ -166,7 +158,6 @@ const FeedPage: React.FC = () => {
         )}
       </AddAlbumSection>
 
-      {/* Przycisk i formularz dodawania zdjęć */}
       <AddPhotoSection>
         {!showAddPhotoForm ? (
           <button onClick={() => setShowAddPhotoForm(true)}>Dodaj zdjęcie</button>
@@ -199,7 +190,6 @@ const FeedPage: React.FC = () => {
         )}
       </AddPhotoSection>
 
-      {/* Lista zdjęć */}
       <PhotoGrid>
         {photos.map((photo) => (
           filterUser ? photo.users?.username.toLowerCase().includes(filterUser.toLowerCase()) ? (<PhotoCard key={photo.id}>
