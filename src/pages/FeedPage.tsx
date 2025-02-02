@@ -53,7 +53,7 @@ const FeedPage: React.FC = () => {
     };
   
     fetchPhotosAndAlbums();
-  }, [filterUser]);
+  }, [photos]);
 
   // Dodaj nowe zdjęcie
   const handleAddPhoto = async () => {

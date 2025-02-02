@@ -9,41 +9,39 @@ const UserPage: React.FC = () => {
   const [photos, setPhotos] = useState<any[]>([]);
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
 
-  // Pobierz dane użytkownika, zdjęcia i posty
   useEffect(() => {
     const fetchUserData = async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      console.log('fetchUserData > user:', user);
-
+      
       if (user) {
         setUser(user);
-        setUsername(user.user_metadata?.username || '');
-        setAvatarUrl(user.user_metadata?.avatar_url || '');
+        
+        const { data: userData, error: userError } = await supabase
+          .from('users')
+          .select('username, avatar_url')
+          .eq('id', user.id)
+          .single();
 
-        // Pobierz zdjęcia użytkownika
+        if (!userError && userData) {
+          setUsername(userData.username || 'Nie ustawiono');
+          setAvatarUrl(userData.avatar_url || '');
+        }
+
         const { data: photos, error: photosError } = await supabase
           .from('photos')
           .select('*')
           .eq('user_id', user.id);
+        
+        if (!photosError) setPhotos(photos);
 
-        if (photosError) {
-          console.error('Error fetching photos:', photosError);
-        } else {
-          setPhotos(photos);
-        }
-
-        // Pobierz posty użytkownika
         const { data: posts, error: postsError } = await supabase
           .from('posts')
           .select('*')
           .eq('user_id', user.id);
-
-        if (postsError) {
-          console.error('Error fetching posts:', postsError);
-        } else {
-          setPosts(posts);
-        }
+        
+        if (!postsError) setPosts(posts);
       }
 
       setLoading(false);
@@ -52,19 +50,10 @@ const UserPage: React.FC = () => {
     fetchUserData();
   }, []);
 
-  // Aktualizacja danych użytkownika
   const handleUpdateProfile = async () => {
     if (!user) return;
 
     try {
-      // Aktualizuj metadane użytkownika w Supabase Auth
-      const { error: authError } = await supabase.auth.updateUser({
-        data: { username, avatar_url: avatarUrl },
-      });
-
-      if (authError) throw authError;
-
-      // Aktualizuj dane użytkownika w tabeli `users`
       const { error: dbError } = await supabase
         .from('users')
         .update({ username, avatar_url: avatarUrl })
@@ -73,46 +62,44 @@ const UserPage: React.FC = () => {
       if (dbError) throw dbError;
 
       alert('Profil zaktualizowany pomyślnie!');
+      setIsEditing(false);
     } catch (error) {
       console.error('Error updating profile:', error);
       alert('Wystąpił błąd podczas aktualizacji profilu.');
     }
   };
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (!user) {
-    return <div>Musisz być zalogowany, aby przeglądać tę stronę.</div>;
-  }
+  if (loading) return <div>Loading...</div>;
+  if (!user) return <div>Musisz być zalogowany, aby przeglądać tę stronę.</div>;
 
   return (
     <Container>
       <h1>Twój profil</h1>
-
-      {/* Sekcja informacji o użytkowniku */}
       <ProfileSection>
         <h2>Informacje o użytkowniku</h2>
         <p><strong>Email:</strong> {user.email}</p>
-        <p><strong>User name:</strong> {user.user_metadata.username}</p>
-        <p><strong>Avatar:</strong> <img className='user-avatar' src={user.user_metadata.avatar_url}  /></p>
-        <input
-          type="text"
-          placeholder="Nazwa użytkownika"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <input
-          type="text"
-          placeholder="URL avatara"
-          value={avatarUrl}
-          onChange={(e) => setAvatarUrl(e.target.value)}
-        />
-        <button onClick={handleUpdateProfile}>Aktualizuj profil</button>
+        <p><strong>User name:</strong> {username}</p>
+        <p><strong>Avatar:</strong> <img className='user-avatar' src={avatarUrl} alt='Avatar' /></p>
+        {isEditing && (
+          <>
+            <input
+              type='text'
+              placeholder='Nazwa użytkownika'
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+            <input
+              type='text'
+              placeholder='URL avatara'
+              value={avatarUrl}
+              onChange={(e) => setAvatarUrl(e.target.value)}
+            />
+            <button onClick={handleUpdateProfile}>Zapisz zmiany</button>
+          </>
+        )}
+        {!isEditing && <button onClick={() => setIsEditing(true)}>Aktualizuj profil</button>}
       </ProfileSection>
 
-      {/* Sekcja zdjęć użytkownika */}
       <PhotosSection>
         <h2>Twoje zdjęcia</h2>
         <PhotoGrid>
@@ -125,7 +112,6 @@ const UserPage: React.FC = () => {
         </PhotoGrid>
       </PhotosSection>
 
-      {/* Sekcja postów użytkownika */}
       <PostsSection>
         <h2>Twoje posty</h2>
         <PostList>
@@ -143,7 +129,6 @@ const UserPage: React.FC = () => {
 
 export default UserPage;
 
-// Stylowanie
 const Container = styled.div`
   padding: 20px;
 `;
@@ -167,13 +152,14 @@ const ProfileSection = styled.div`
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    margin-top: 10px;
   }
 
   button:hover {
     background: #0056b3;
   }
 
-  .user-avatar{
+  .user-avatar {
     width: 60px;
     height: 60px;
     border-radius: 50%;

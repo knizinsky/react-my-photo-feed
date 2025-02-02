@@ -7,6 +7,18 @@ const PostsPage: React.FC = () => {
   const [newPostTitle, setNewPostTitle] = useState('');
   const [newPostContent, setNewPostContent] = useState('');
   const [newCommentContent, setNewCommentContent] = useState<{ [postId: string]: string }>({});
+  const [showAddPostButton, setShowAddPostButton] = useState(false);
+  const [currentUser, setCurrentUser] = useState<any>(null);
+
+  // Pobierz obecnego użytkownika
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setCurrentUser(user);
+    };
+
+    fetchCurrentUser();
+  }, []);
 
   // Pobierz posty z komentarzami i informacjami o autorze
   useEffect(() => {
@@ -23,7 +35,7 @@ const PostsPage: React.FC = () => {
     };
 
     fetchPosts();
-  }, []);
+  }, [posts]);
 
   // Dodaj nowy post
   const handleAddPost = async () => {
@@ -117,19 +129,26 @@ const PostsPage: React.FC = () => {
 
       {/* Formularz dodawania postów */}
       <AddPostSection>
-        <h2>Dodaj nowy post</h2>
-        <input
-          type="text"
-          placeholder="Tytuł posta"
-          value={newPostTitle}
-          onChange={(e) => setNewPostTitle(e.target.value)}
-        />
-        <textarea
-          placeholder="Treść posta"
-          value={newPostContent}
-          onChange={(e) => setNewPostContent(e.target.value)}
-        />
-        <button onClick={handleAddPost}>Dodaj post</button>
+        {!showAddPostButton ? (
+          <button onClick={() => setShowAddPostButton(true)}>Dodaj post</button>
+        ) : (
+          <>
+            <h2>Dodaj nowy post</h2>
+            <input
+              type="text"
+              placeholder="Tytuł posta"
+              value={newPostTitle}
+              onChange={(e) => setNewPostTitle(e.target.value)}
+            />
+            <textarea
+              placeholder="Treść posta"
+              value={newPostContent}
+              onChange={(e) => setNewPostContent(e.target.value)}
+            />
+            <button onClick={handleAddPost}>Dodaj post</button>
+            <button onClick={() => setShowAddPostButton(false)}>Anuluj</button>
+          </>
+        )}
       </AddPostSection>
 
       {/* Lista postów */}
@@ -141,7 +160,9 @@ const PostsPage: React.FC = () => {
             <p><strong>Autor:</strong> {post.user?.username}</p>
 
             {/* Przycisk usuwania posta (tylko dla autora) */}
-            <button onClick={() => handleDeletePost(post.id)}>Usuń post</button>
+            {currentUser && post.user_id === currentUser.id && (
+              <button onClick={() => handleDeletePost(post.id)}>Usuń post</button>
+            )}
 
             {/* Komentarze do posta */}
             <CommentsSection>

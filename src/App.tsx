@@ -7,11 +7,7 @@ import Layout from './components/Layout';
 import FeedPage from './pages/FeedPage';
 import UserPage from './pages/UserPage';
 import NotFoundPage from './pages/NotFoundPage';
-import FoldersPage from './pages/FoldersPage';
-import AddPhotoPage from './pages/AddPhotoPage';
-import DeletePhotoPage from './pages/DeletePhotoPage';
 import UserListPage from './pages/UserListPage';
-import ImageListPage from './pages/ImageListPage';
 import PostsPage from './pages/PostsPage';
 
 const CheckSession: React.FC = () => {
@@ -60,16 +56,6 @@ const App: React.FC = () => {
             <PrivateRoute>
               <Layout>
                 <UserListPage />
-              </Layout>
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/image-list"
-          element={
-            <PrivateRoute>
-              <Layout>
-                <ImageListPage />
               </Layout>
             </PrivateRoute>
           }
