@@ -1,19 +1,7 @@
 import React, { useEffect } from "react";
-import {
-  BrowserRouter as Router,
-  Route,
-  Routes,
-  useNavigate,
-} from "react-router-dom";
-import AuthPage from "./pages/AuthPage";
-import PrivateRoute from "./components/PrivateRoute";
+import { BrowserRouter as Router, useNavigate } from "react-router-dom";
 import { supabase } from "./supabaseClient";
-import Layout from "./components/Layout";
-import FeedPage from "./pages/FeedPage";
-import UserPage from "./pages/UserPage";
-import NotFoundPage from "./pages/NotFoundPage";
-import UserListPage from "./pages/UserListPage";
-import PostsPage from "./pages/PostsPage";
+import AppRoutes from "./routes/routes";
 
 const CheckSession: React.FC = () => {
   const navigate = useNavigate();
@@ -33,57 +21,7 @@ const App: React.FC = () => {
   return (
     <Router>
       <CheckSession />
-      <Routes>
-        <Route path="/auth" element={<AuthPage />} />
-        <Route
-          path="/feed"
-          element={
-            <PrivateRoute>
-              <Layout>
-                <FeedPage />
-              </Layout>
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/user"
-          element={
-            <PrivateRoute>
-              <Layout>
-                <UserPage />
-              </Layout>
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/user-list"
-          element={
-            <PrivateRoute>
-              <Layout>
-                <UserListPage />
-              </Layout>
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/posts"
-          element={
-            <PrivateRoute>
-              <Layout>
-                <PostsPage />
-              </Layout>
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="*"
-          element={
-            <Layout>
-              <NotFoundPage />
-            </Layout>
-          }
-        />
-      </Routes>
+      <AppRoutes />
     </Router>
   );
 };
