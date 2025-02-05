@@ -1,4 +1,4 @@
-import { createGlobalStyle } from "styled-components";
+import { createGlobalStyle } from 'styled-components';
 
 export const GlobalStyles = createGlobalStyle`
   *,
@@ -15,11 +15,11 @@ export const GlobalStyles = createGlobalStyle`
   }
 
   body {
-    font-family: "Geist", sans-serif;
-    background-color: #f0f0f0;
-    color: #333;
+    font-family: ${({ theme }) => theme?.fonts?.main || "sans-serif"};
+    background-color: ${({ theme }) => theme?.colors?.background || "#000"};
+    background-image: linear-gradient(8deg, rgb(0 34 69 / 93%), rgb(0 0 0 / 94%)), url(../../public/background.jpg);
+    color: ${({ theme }) => theme?.colors?.text || "#fff"};
   }
-
 
   html {
     scroll-behavior: smooth;
@@ -53,5 +53,4 @@ export const GlobalStyles = createGlobalStyle`
     border-collapse: collapse;
     border-spacing: 0;
   }
-
 `;

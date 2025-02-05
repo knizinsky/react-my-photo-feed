@@ -72,8 +72,9 @@ export default Header;
 const HeaderContainer = styled.header`
   width: 100%;
   padding: 1rem;
-  background-color: #333;
+  background-color: #b9b9b900;
   color: white;
+  backdrop-filter: blur(15px);
 `;
 
 const Nav = styled.nav`

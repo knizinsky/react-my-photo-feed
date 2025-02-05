@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "../supabaseClient";
 import styled from "styled-components";
 import { fetchAlbums, fetchPhotos, getUser } from "../services/supabaseService";
 import { Photo } from "../types/Photo";
 import { Album } from "../types/Album";
 
-const FeedPage: React.FC = () => {
+const FeedPage = () => {
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [albums, setAlbums] = useState<Album[]>([]);
   const [filterUser, setFilterUser] = useState("");
@@ -71,16 +71,14 @@ const FeedPage: React.FC = () => {
         data: { publicUrl },
       } = supabase.storage.from("photos").getPublicUrl(filePath);
 
-      const { data, error } = await supabase
-        .from("photos")
-        .insert([
-          {
-            url: publicUrl,
-            description: newPhotoDescription,
-            album_id: selectedAlbum,
-            user_id: user.id,
-          },
-        ]);
+      const { data, error } = await supabase.from("photos").insert([
+        {
+          url: publicUrl,
+          description: newPhotoDescription,
+          album_id: selectedAlbum,
+          user_id: user.id,
+        },
+      ]);
 
       if (error) {
         throw error;
@@ -147,75 +145,83 @@ const FeedPage: React.FC = () => {
   return (
     <Container>
       <Header>
-        <h1>Feed</h1>
+        <h1>Galeria zdjęć</h1>
+        <SubTitle>
+          Poniżej znajduje się galeria wszystkich dostępnych zdjęć dodanych
+          przez użytkowników.
+        </SubTitle>
       </Header>
 
-      <FilterSection>
-        <input
-          type="text"
-          placeholder="Filtruj po użytkowniku"
-          value={filterUser}
-          onChange={(e) => setFilterUser(e.target.value)}
-        />
-      </FilterSection>
+      <div>
+        <FilterSection>
+          <input
+            type="text"
+            placeholder="Filtruj po użytkowniku"
+            value={filterUser}
+            onChange={(e) => setFilterUser(e.target.value)}
+          />
+        </FilterSection>
 
-      <AddAlbumSection>
-        {!showAddAlbumForm ? (
-          <Button onClick={() => setShowAddAlbumForm(true)}>Dodaj album</Button>
-        ) : (
-          <AlbumForm>
-            <h2>Dodaj nowy album</h2>
-            <input
-              type="text"
-              placeholder="Nazwa albumu"
-              value={newAlbumName}
-              onChange={(e) => setNewAlbumName(e.target.value)}
-            />
-            <Button onClick={handleAddAlbum}>Dodaj album</Button>
-            <Button secondary onClick={() => setShowAddAlbumForm(false)}>
-              Anuluj
+        <AddAlbumSection>
+          {!showAddAlbumForm ? (
+            <Button onClick={() => setShowAddAlbumForm(true)}>
+              Dodaj album
             </Button>
-          </AlbumForm>
-        )}
-      </AddAlbumSection>
+          ) : (
+            <AlbumForm>
+              <h2>Dodaj nowy album</h2>
+              <input
+                type="text"
+                placeholder="Nazwa albumu"
+                value={newAlbumName}
+                onChange={(e) => setNewAlbumName(e.target.value)}
+              />
+              <Button onClick={handleAddAlbum}>Dodaj album</Button>
+              <Button secondary onClick={() => setShowAddAlbumForm(false)}>
+                Anuluj
+              </Button>
+            </AlbumForm>
+          )}
+        </AddAlbumSection>
 
-      <AddPhotoSection>
-        {!showAddPhotoForm ? (
-          <Button onClick={() => setShowAddPhotoForm(true)}>
-            Dodaj zdjęcie
-          </Button>
-        ) : (
-          <PhotoForm>
-            <h2>Dodaj nowe zdjęcie</h2>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => setNewPhotoFile(e.target.files?.[0] || null)}
-            />
-            <input
-              type="text"
-              placeholder="Opis zdjęcia"
-              value={newPhotoDescription}
-              onChange={(e) => setNewPhotoDescription(e.target.value)}
-            />
-            <select
-              value={selectedAlbum}
-              onChange={(e) => setSelectedAlbum(e.target.value)}
-            >
-              <option value="">Wybierz album</option>
-              {albums.map((album) => (
-                <option key={album.id} value={album.id}>
-                  {album.name}
-                </option>
-              ))}
-            </select>
-            <Button onClick={handleAddPhoto}>Dodaj zdjęcie</Button>
-            <Button secondary onClick={() => setShowAddPhotoForm(false)}>
-              Anuluj
+        <AddPhotoSection>
+          {!showAddPhotoForm ? (
+            <Button onClick={() => setShowAddPhotoForm(true)}>
+              Dodaj zdjęcie
             </Button>
-          </PhotoForm>
-        )}
-      </AddPhotoSection>
+          ) : (
+            <PhotoForm>
+              <h2>Dodaj nowe zdjęcie</h2>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setNewPhotoFile(e.target.files?.[0] || null)}
+              />
+              <input
+                type="text"
+                placeholder="Opis zdjęcia"
+                value={newPhotoDescription}
+                onChange={(e) => setNewPhotoDescription(e.target.value)}
+              />
+              <select
+                value={selectedAlbum}
+                onChange={(e) => setSelectedAlbum(e.target.value)}
+              >
+                <option value="">Wybierz album</option>
+                {albums.map((album) => (
+                  <option key={album.id} value={album.id}>
+                    {album.name}
+                  </option>
+                ))}
+              </select>
+              <Button onClick={handleAddPhoto}>Dodaj zdjęcie</Button>
+              <Button secondary onClick={() => setShowAddPhotoForm(false)}>
+                Anuluj
+              </Button>
+            </PhotoForm>
+          )}
+        </AddPhotoSection>
+      </div>
 
       <PhotoGrid>
         {photos.map((photo) =>
@@ -256,6 +262,13 @@ const FeedPage: React.FC = () => {
 
 export default FeedPage;
 
+const SubTitle = styled.span`
+  padding-top: 10px;
+  color: #a4a4a4;
+  display: block;
+  max-width: 490px;
+`;
+
 const Container = styled.div`
   padding: 20px;
   max-width: 1200px;
@@ -263,6 +276,9 @@ const Container = styled.div`
 `;
 
 const Header = styled.header`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
   margin-bottom: 20px;
 `;

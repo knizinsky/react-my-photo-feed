@@ -1,28 +1,19 @@
-import React, { useEffect } from "react";
-import { BrowserRouter as Router, useNavigate } from "react-router-dom";
-import { supabase } from "./supabaseClient";
+import { BrowserRouter as Router } from "react-router-dom";
 import AppRoutes from "./routes/routes";
+import { GlobalStyles } from "./styles/GlobalStyles";
+import { theme } from "./styles/theme";
+import { ThemeProvider } from "styled-components";
+import CheckSession from "./components/CheckSession";
 
-const CheckSession: React.FC = () => {
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const checkSession = async () => {
-      await supabase.auth.getSession();
-    };
-
-    checkSession();
-  }, [navigate]);
-
-  return null;
-};
-
-const App: React.FC = () => {
+const App = () => {
   return (
-    <Router>
-      <CheckSession />
-      <AppRoutes />
-    </Router>
+    <ThemeProvider theme={theme}>
+      <GlobalStyles />
+      <Router>
+        <CheckSession />
+        <AppRoutes />
+      </Router>
+    </ThemeProvider>
   );
 };
 
