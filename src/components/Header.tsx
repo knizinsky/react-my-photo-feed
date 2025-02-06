@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "../supabaseClient";
 import styled from "styled-components";
 import { UserResponse } from "@supabase/supabase-js";
 import { getUser, signOut } from "../services/supabaseService";
 
-const Header: React.FC = () => {
+const Header = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<UserResponse>(null);
   const [username, setUsername] = useState("");

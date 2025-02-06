@@ -152,38 +152,7 @@ const FeedPage = () => {
         </SubTitle>
       </Header>
 
-      <div>
-        <FilterSection>
-          <input
-            type="text"
-            placeholder="Filtruj po użytkowniku"
-            value={filterUser}
-            onChange={(e) => setFilterUser(e.target.value)}
-          />
-        </FilterSection>
-
-        <AddAlbumSection>
-          {!showAddAlbumForm ? (
-            <Button onClick={() => setShowAddAlbumForm(true)}>
-              Dodaj album
-            </Button>
-          ) : (
-            <AlbumForm>
-              <h2>Dodaj nowy album</h2>
-              <input
-                type="text"
-                placeholder="Nazwa albumu"
-                value={newAlbumName}
-                onChange={(e) => setNewAlbumName(e.target.value)}
-              />
-              <Button onClick={handleAddAlbum}>Dodaj album</Button>
-              <Button secondary onClick={() => setShowAddAlbumForm(false)}>
-                Anuluj
-              </Button>
-            </AlbumForm>
-          )}
-        </AddAlbumSection>
-
+      <ButtonsContainer>
         <AddPhotoSection>
           {!showAddPhotoForm ? (
             <Button onClick={() => setShowAddPhotoForm(true)}>
@@ -221,7 +190,38 @@ const FeedPage = () => {
             </PhotoForm>
           )}
         </AddPhotoSection>
-      </div>
+
+        <AddAlbumSection>
+          {!showAddAlbumForm ? (
+            <Button onClick={() => setShowAddAlbumForm(true)}>
+              Dodaj album
+            </Button>
+          ) : (
+            <AlbumForm>
+              <h2>Dodaj nowy album</h2>
+              <input
+                type="text"
+                placeholder="Nazwa albumu"
+                value={newAlbumName}
+                onChange={(e) => setNewAlbumName(e.target.value)}
+              />
+              <Button onClick={handleAddAlbum}>Dodaj album</Button>
+              <Button secondary onClick={() => setShowAddAlbumForm(false)}>
+                Anuluj
+              </Button>
+            </AlbumForm>
+          )}
+        </AddAlbumSection>
+      </ButtonsContainer>
+
+      <FilterSection>
+        <input
+          type="text"
+          placeholder="Filtruj po użytkowniku"
+          value={filterUser}
+          onChange={(e) => setFilterUser(e.target.value)}
+        />
+      </FilterSection>
 
       <PhotoGrid>
         {photos.map((photo) =>
@@ -231,7 +231,7 @@ const FeedPage = () => {
               .includes(filterUser.toLowerCase()) ? (
               <PhotoCard key={photo.id}>
                 <img src={photo.url} alt={photo.description} />
-                <p>{photo.description}</p>
+                <PhotoTitle>{photo.description}</PhotoTitle>
                 <p>Album: {photo.albums?.name}</p>
                 <p>Autor: {photo.users?.username}</p>
                 <Button onClick={() => handleDeletePhoto(photo.id)}>
@@ -244,7 +244,7 @@ const FeedPage = () => {
           ) : (
             <PhotoCard key={photo.id}>
               <img src={photo.url} alt={photo.description} />
-              <p>{photo.description}</p>
+              <PhotoTitle>{photo.description}</PhotoTitle>
               <p>Album: {photo.albums?.name}</p>
               <p>Autor: {photo.users?.username}</p>
               {userId === photo.user_id && (
@@ -262,6 +262,13 @@ const FeedPage = () => {
 
 export default FeedPage;
 
+const PhotoTitle = styled.p`
+  font-size: 18px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: ${({ theme }) => theme.colors.text};
+`;
+
 const SubTitle = styled.span`
   padding-top: 10px;
   color: #a4a4a4;
@@ -273,6 +280,11 @@ const Container = styled.div`
   padding: 20px;
   max-width: 1200px;
   margin: 0 auto;
+`;
+
+const ButtonsContainer = styled.div`
+  display: flex;
+  justify-content: center;
 `;
 
 const Header = styled.header`
@@ -296,7 +308,7 @@ const FilterSection = styled.div`
 `;
 
 const AddAlbumSection = styled.div`
-  margin-bottom: 20px;
+  margin: 10px 15px;
 `;
 
 const AlbumForm = styled.div`
@@ -314,7 +326,7 @@ const AlbumForm = styled.div`
 `;
 
 const AddPhotoSection = styled.div`
-  margin-bottom: 20px;
+  margin: 10px 15px;
 `;
 
 const PhotoForm = styled.div`
@@ -339,17 +351,21 @@ const PhotoGrid = styled.div`
 `;
 
 const PhotoCard = styled.div`
-  border: 1px solid #ddd;
+  border: 1px solid #4040408c;
   border-radius: 8px;
   padding: 10px;
   text-align: center;
-  background: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background: #ffffff14;
+  box-shadow: 6px 8px 9px 3px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  color: #ffffff99;
+
 
   img {
     max-width: 100%;
     height: auto;
     border-radius: 8px;
+    border: 1px solid #434343;
   }
 
   p {

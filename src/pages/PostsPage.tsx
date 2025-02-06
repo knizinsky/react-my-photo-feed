@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "../supabaseClient";
 import styled from "styled-components";
 import { getUser } from "../services/supabaseService";
 import { Post } from "../types/Post";
 import { User } from "@supabase/supabase-js";
 
-const PostsPage: React.FC = () => {
+const PostsPage = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [newPostTitle, setNewPostTitle] = useState("");
   const [newPostContent, setNewPostContent] = useState("");

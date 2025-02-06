@@ -1,8 +1,8 @@
-import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { supabase } from '../supabaseClient';
+import { ReactNode, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "../supabaseClient";
 
-const CheckSession: React.FC = () => {
+const CheckSession: () => ReactNode = () => {
   const navigate = useNavigate();
 
   useEffect(() => {

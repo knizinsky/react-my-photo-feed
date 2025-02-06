@@ -1,8 +1,7 @@
-import React from "react";
 import Header from "./Header";
 import { LayoutProps } from "../types/LayoutProps";
 
-const Layout: React.FC<LayoutProps> = ({ children }) => {
+const Layout = ({ children }: LayoutProps) => {
   return (
     <div>
       <Header />

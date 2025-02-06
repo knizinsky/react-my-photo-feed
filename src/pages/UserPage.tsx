@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "../supabaseClient";
 import styled from "styled-components";
 import { getUser } from "../services/supabaseService";
@@ -6,7 +6,7 @@ import { User } from "@supabase/supabase-js";
 import { Photo } from "../types/Photo";
 import { Post } from "../types/Post";
 
-const UserPage: React.FC = () => {
+const UserPage = () => {
   const [user, setUser] = useState<User>(null);
   const [username, setUsername] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");

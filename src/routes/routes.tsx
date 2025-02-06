@@ -1,4 +1,3 @@
-import React from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import AuthPage from "../pages/AuthPage";
 import PrivateRoute from "../components/PrivateRoute";
@@ -9,7 +8,7 @@ import UserListPage from "../pages/UserListPage";
 import PostsPage from "../pages/PostsPage";
 import NotFoundPage from "../pages/NotFoundPage";
 
-const AppRoutes: React.FC = () => {
+const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/" element={<Navigate to="/feed" replace />} />
