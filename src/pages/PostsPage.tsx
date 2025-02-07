@@ -40,7 +40,6 @@ const PostsPage = () => {
     if (postsError) {
       console.error("Error fetching posts:", postsError);
     } else {
-      console.log("fetchPosts > posts:", posts);
       setPosts(posts);
     }
   };

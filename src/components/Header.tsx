@@ -12,6 +12,8 @@ import {
   faRightFromBracket,
   faSquareShareNodes,
   faUserGroup,
+  faBars,
+  faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import Avatar from "./ui/Avatar";
 
@@ -20,6 +22,7 @@ const Header = () => {
   const [user, setUser] = useState<UserResponse>(null);
   const [username, setUsername] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -49,6 +52,10 @@ const Header = () => {
     navigate("/auth");
   };
 
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
   return (
     <HeaderContainer>
       <Nav>
@@ -60,22 +67,39 @@ const Header = () => {
             </LinkContainer>
           </LogoContainer>
           <Separator> | </Separator>
-          <LinkContainer>
-            <FontAwesomeIcon icon={faImages} />
-            <StyledLink to="/feed">Zdjęcia</StyledLink>
-          </LinkContainer>
-          <LinkContainer>
-            <FontAwesomeIcon icon={faAddressCard} />
-            <StyledLink to="/user">Profil</StyledLink>
-          </LinkContainer>
-          <LinkContainer>
-            <FontAwesomeIcon icon={faComments} />
-            <StyledLink to="/posts">Posty</StyledLink>
-          </LinkContainer>
-          <LinkContainer>
-            <FontAwesomeIcon icon={faUserGroup} />
-            <StyledLink to="/user-list">Użytkownicy</StyledLink>
-          </LinkContainer>
+          <MenuIcon onClick={toggleMenu}>
+            {isMenuOpen ? (
+              <FontAwesomeIcon icon={faXmark} />
+            ) : (
+              <FontAwesomeIcon icon={faBars} />
+            )}
+          </MenuIcon>
+          <LinksContainer isMenuOpen={isMenuOpen}>
+            <LinkContainer>
+              <FontAwesomeIcon icon={faImages} />
+              <StyledLink to="/feed" onClick={toggleMenu}>
+                Zdjęcia
+              </StyledLink>
+            </LinkContainer>
+            <LinkContainer>
+              <FontAwesomeIcon icon={faAddressCard} />
+              <StyledLink to="/user" onClick={toggleMenu}>
+                Profil
+              </StyledLink>
+            </LinkContainer>
+            <LinkContainer>
+              <FontAwesomeIcon icon={faComments} />
+              <StyledLink to="/posts" onClick={toggleMenu}>
+                Posty
+              </StyledLink>
+            </LinkContainer>
+            <LinkContainer>
+              <FontAwesomeIcon icon={faUserGroup} />
+              <StyledLink to="/user-list" onClick={toggleMenu}>
+                Użytkownicy
+              </StyledLink>
+            </LinkContainer>
+          </LinksContainer>
         </NavLinks>
 
         {user ? (
@@ -84,7 +108,9 @@ const Header = () => {
               src={avatarUrl || "/default-user-avatar.jpg"}
               alt="User Avatar"
             />
-            <Username>{username}</Username>
+            <Username>
+              <StyledLink to="/user">{username}</StyledLink>
+            </Username>
             <LogoutContainer>
               <LogoutButton onClick={handleLogout}>Wyloguj</LogoutButton>
               <FontAwesomeIcon icon={faRightFromBracket} />
@@ -109,6 +135,10 @@ const LogoContainer = styled.div`
   div a {
     color: white;
     font-weight: 600;
+
+    @media (max-width: 576px) {
+      display: none;
+    }
   }
 `;
 
@@ -149,6 +179,28 @@ const Nav = styled.nav`
 const NavLinks = styled.div`
   display: flex;
   gap: 30px;
+  align-items: center;
+
+  @media (max-width: 992px) {
+    gap: 15px;
+  }
+`;
+
+const LinksContainer = styled.div<{ isMenuOpen: boolean }>`
+  display: flex;
+  gap: 30px;
+
+  @media (max-width: 992px) {
+    display: ${({ isMenuOpen }) => (isMenuOpen ? "flex" : "none")};
+    flex-direction: column;
+    position: absolute;
+    top: 60px;
+    left: 0;
+    background: #1b1b1b;
+    width: 100%;
+    padding: 10px 20px;
+    backdrop-filter: blur(10px);
+  }
 `;
 
 const StyledLink = styled(Link)`
@@ -170,6 +222,10 @@ const UserSection = styled.div`
 
 const Username = styled.span`
   font-size: 16px;
+
+  @media (max-width: 992px) {
+    display: none;
+  }
 `;
 
 const LogoutButton = styled.button`
@@ -181,5 +237,14 @@ const LogoutButton = styled.button`
 
   &:hover {
     text-decoration: underline;
+  }
+`;
+
+const MenuIcon = styled.div`
+  display: none;
+  cursor: pointer;
+
+  @media (max-width: 992px) {
+    display: block;
   }
 `;

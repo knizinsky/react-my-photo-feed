@@ -172,7 +172,7 @@ const UserPage = () => {
       </ProfileSection>
 
       <PhotosSection>
-        <h2>Twoje zdjęcia</h2>
+        <SectionTitle>Twoje zdjęcia</SectionTitle>
         <PhotoGrid>
           {photos.map((photo) => (
             <PhotoCard
@@ -188,7 +188,7 @@ const UserPage = () => {
       </PhotosSection>
 
       <PostsSection>
-        <h2>Twoje posty</h2>
+        <SectionTitle>Twoje posty</SectionTitle>
         <PostList>
           {posts.map((post) => (
             <PostCard key={post.id}>
@@ -203,6 +203,10 @@ const UserPage = () => {
 };
 
 export default UserPage;
+
+const SectionTitle = styled.h2`
+  margin-bottom: 20px;
+`;
 
 const ChangeUserDetailsContainer = styled.div`
   display: flex;
@@ -247,6 +251,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  text-align: center;
 `;
 
 const ProfileSection = styled.div`
@@ -285,11 +290,22 @@ const PostList = styled.div`
 `;
 
 const PostCard = styled.div`
-  border: 1px solid #ddd;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid #4040408c;
   border-radius: 8px;
-  padding: 10px;
+  padding: 20px 90px;
+  text-align: center;
+  background: #1d1d1d8f;
+  box-shadow: 6px 8px 9px 3px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  color: #ffffff99;
+  background-image: linear-gradient(309deg, #00000026, #ffffff12);
+  margin: 5px 80px;
 
   h3 {
-    margin: 0;
+    color: #ffffffd1;
+    margin-bottom: 10px;
   }
 `;
