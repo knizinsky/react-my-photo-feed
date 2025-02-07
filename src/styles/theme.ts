@@ -1,14 +1,28 @@
 export const theme = {
-    colors: {
-      primary: '#007bff',
-      primaryHover: '#0056b3',
-      secondary: '#6c757d',
-      secondaryHover: '#5a6268',
-      background: '#f0f0f0',
-      text: '#ffffff',
-      error: 'red',
-    },
-    fonts: {
-      main: '"Geist", sans-serif',
-    },
-  };
+  colors: {
+    primary: '#007bff',
+    primaryHover: '#0056b3',
+    primaryGradient: 'linear-gradient(45deg, #88312a, #43155d)',
+    secondary: '#6c757d',
+    secondaryHover: '#5a6268',
+    background: '#f0f0f0',
+    text: '#ffffff',
+    error: 'red',
+    inputBackground: '#ffffff17',
+    inputBorder: '#cccccc9b',
+    inputFocusBorder: '#ffffff92',
+    buttonBackground: 'linear-gradient(272deg, #c6c6c6, #ffffff)',
+    buttonText: '#000000',
+    buttonPrimaryText: '#fff',
+    buttonHoverFilter: 'brightness(1.2)',
+    cardBackground: '#ffffff14',
+    cardBorder: '#4040408c',
+    cardShadow: '6px 8px 9px 3px rgba(0, 0, 0, 0.1)',
+    cardText: '#ffffff99',
+    cardImageBorder: '#5a5a5a',
+    cardImageShadow: '1px 14px 20px 0px #00000033',
+  },
+  fonts: {
+    main: '"Geist", sans-serif',
+  },
+};

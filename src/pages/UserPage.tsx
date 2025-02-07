@@ -5,6 +5,12 @@ import { getUser } from "../services/supabaseService";
 import { User } from "@supabase/supabase-js";
 import { Photo } from "../types/Photo";
 import { Post } from "../types/Post";
+import PhotoCard from "../components/PhotoCard";
+import { handleDeletePhoto } from "../utils/photoUtils";
+import Button, { PrimaryButton } from "../components/ui/Button";
+import Input from "../components/ui/Input";
+import { FileInput } from "../components/ui/FileUpload";
+import ButtonsContainer from "../components/ui/ButtonsContainer";
 
 const UserPage = () => {
   const [user, setUser] = useState<User>(null);
@@ -62,7 +68,7 @@ const UserPage = () => {
       const filePath = `avatars/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
-        .from("avatars") // Bucket 'avatars' musi istnieć
+        .from("avatars")
         .upload(filePath, avatarFile, { upsert: true });
 
       if (uploadError) throw uploadError;
@@ -110,6 +116,11 @@ const UserPage = () => {
     <Container>
       <h1>Twój profil</h1>
       <ProfileSection>
+        <img
+          className="user-avatar"
+          src={avatarUrl || "/default-user-avatar.jpg"}
+          alt="Avatar"
+        />
         <h2>Informacje o użytkowniku</h2>
         <p>
           <strong>Email:</strong> {user.email}
@@ -117,33 +128,32 @@ const UserPage = () => {
         <p>
           <strong>User name:</strong> {username}
         </p>
-        <p>
-          <strong>Avatar:</strong>
-        </p>
-        <img
-          className="user-avatar"
-          src={avatarUrl || "/default-user-avatar.jpg"}
-          alt="Avatar"
-        />
 
         {isEditing && (
           <>
-            <input
+            <Input
               type="text"
               placeholder="Nazwa użytkownika"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
             />
-            <input
+            <FileInput
               type="file"
               accept="image/*"
               onChange={(e) => setAvatarFile(e.target.files?.[0] || null)}
             />
-            <button onClick={handleUpdateProfile}>Zapisz zmiany</button>
+            <ButtonsContainer>
+              <PrimaryButton onClick={handleUpdateProfile}>
+                Zapisz zmiany
+              </PrimaryButton>
+              <Button onClick={() => setIsEditing(false)}>Anuluj</Button>
+            </ButtonsContainer>
           </>
         )}
         {!isEditing && (
-          <button onClick={() => setIsEditing(true)}>Aktualizuj profil</button>
+          <PrimaryButton onClick={() => setIsEditing(true)}>
+            Aktualizuj profil
+          </PrimaryButton>
         )}
       </ProfileSection>
 
@@ -151,10 +161,14 @@ const UserPage = () => {
         <h2>Twoje zdjęcia</h2>
         <PhotoGrid>
           {photos.map((photo) => (
-            <PhotoCard key={photo.id}>
-              <img src={photo.url} alt={photo.description} />
-              <p>{photo.description}</p>
-            </PhotoCard>
+            <PhotoCard
+              key={photo.id}
+              photo={photo}
+              userId={user.id}
+              handleDeletePhoto={() =>
+                handleDeletePhoto(photo.id, setPhotos, photos)
+              }
+            />
           ))}
         </PhotoGrid>
       </PhotosSection>
@@ -178,40 +192,23 @@ export default UserPage;
 
 const Container = styled.div`
   padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `;
 
 const ProfileSection = styled.div`
-  margin-bottom: 20px;
-
-  input {
-    display: block;
-    margin-bottom: 10px;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    width: 300px;
-  }
-
-  button {
-    padding: 10px 20px;
-    background: #007bff;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-top: 10px;
-  }
-
-  button:hover {
-    background: #0056b3;
-  }
+  margin-bottom: 36px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
   .user-avatar {
-    width: 100px;
-    height: 100px;
+    width: 70px;
+    height: 70px;
     border-radius: 50%;
     object-fit: cover;
-    margin-top: 10px;
+    margin: 20px 0 15px;
   }
 `;
 
@@ -220,22 +217,8 @@ const PhotosSection = styled.div`
 `;
 
 const PhotoGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 20px;
-`;
-
-const PhotoCard = styled.div`
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 10px;
-  text-align: center;
-
-  img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 8px;
-  }
+  display: flex;
+  gap: 15px;
 `;
 
 const PostsSection = styled.div`
