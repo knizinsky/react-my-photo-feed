@@ -61,19 +61,19 @@ const Header = () => {
           <Separator> | </Separator>
           <LinkContainer>
             <FontAwesomeIcon icon={faImages} />
-            <StyledLink to="/feed">Feed</StyledLink>
+            <StyledLink to="/feed">Zdjęcia</StyledLink>
           </LinkContainer>
           <LinkContainer>
             <FontAwesomeIcon icon={faAddressCard} />
-            <StyledLink to="/user">Profile</StyledLink>
+            <StyledLink to="/user">Profil</StyledLink>
           </LinkContainer>
           <LinkContainer>
             <FontAwesomeIcon icon={faComments} />
-            <StyledLink to="/posts">Posts</StyledLink>
+            <StyledLink to="/posts">Posty</StyledLink>
           </LinkContainer>
           <LinkContainer>
             <FontAwesomeIcon icon={faUserGroup} />
-            <StyledLink to="/user-list">Users</StyledLink>
+            <StyledLink to="/user-list">Użytkownicy</StyledLink>
           </LinkContainer>
         </NavLinks>
 
@@ -85,7 +85,7 @@ const Header = () => {
             />
             <Username>{username}</Username>
             <LogoutContainer>
-              <LogoutButton onClick={handleLogout}>Logout</LogoutButton>
+              <LogoutButton onClick={handleLogout}>Wyloguj</LogoutButton>
               <FontAwesomeIcon icon={faRightFromBracket} />
             </LogoutContainer>
           </UserSection>
