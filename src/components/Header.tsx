@@ -13,6 +13,7 @@ import {
   faSquareShareNodes,
   faUserGroup,
 } from "@fortawesome/free-solid-svg-icons";
+import Avatar from "./ui/Avatar";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -165,14 +166,6 @@ const UserSection = styled.div`
   align-items: center;
   gap: 1rem;
   margin: 0 12px;
-`;
-
-const Avatar = styled.img`
-  width: 37px;
-  height: 37px;
-  border-radius: 50%;
-  object-fit: cover;
-  box-shadow: 0 0 10px #0000006e;
 `;
 
 const Username = styled.span`

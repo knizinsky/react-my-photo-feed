@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import { supabase } from "../supabaseClient";
 import styled from "styled-components";
 import { User } from "../types/User";
+import SubTitle from "../components/ui/SubTitle";
+import Input from "../components/ui/Input";
+import Avatar from "../components/ui/Avatar";
 
 const UserListPage = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -30,11 +33,14 @@ const UserListPage = () => {
   return (
     <Container>
       <h1>Lista użytkowników</h1>
-
+      <SubTitle>
+        Poniżej znajduje się lista użytkowników. Możesz wyszukać danych
+        użytkowników po nazwie.
+      </SubTitle>
       <SearchSection>
-        <input
+        <Input
           type="text"
-          placeholder="Wyszukaj użytkownika po nazwie"
+          placeholder="Wyszukaj po nazwie..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
@@ -43,6 +49,10 @@ const UserListPage = () => {
       <UserList>
         {users.map((user) => (
           <UserCard key={user.id}>
+            <Avatar
+              src={user?.avatar_url || "/default-user-avatar.jpg"}
+              alt="User Avatar"
+            />
             <p>
               <strong>Nazwa użytkownika:</strong> {user.username}
             </p>
@@ -64,30 +74,34 @@ export default UserListPage;
 
 const Container = styled.div`
   padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 `;
 
 const SearchSection = styled.div`
-  margin-bottom: 20px;
-
-  input {
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    width: 300px;
-  }
+  margin: 10px 0 26px;
 `;
 
 const UserList = styled.div`
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 18px 22px;
 `;
 
 const UserCard = styled.div`
-  border: 1px solid #ddd;
+  border: 1px solid #4040408c;
   border-radius: 8px;
   padding: 10px;
-  background: #f9f9f9;
+  text-align: center;
+  background: #ffffff14;
+  box-shadow: 6px 8px 9px 3px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  color: #ffffff99;
+  background-image: linear-gradient(309deg, #00000026, #ffffff12);
+  width: 400px;
 
   p {
     margin: 5px 0;
