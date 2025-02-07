@@ -11,6 +11,7 @@ import Button, { PrimaryButton } from "../components/ui/Button";
 import Input from "../components/ui/Input";
 import { FileInput } from "../components/ui/FileUpload";
 import ButtonsContainer from "../components/ui/ButtonsContainer";
+import SubTitle from "../components/ui/SubTitle";
 
 const UserPage = () => {
   const [user, setUser] = useState<User>(null);
@@ -116,39 +117,52 @@ const UserPage = () => {
     <Container>
       <h1>Twój profil</h1>
       <ProfileSection>
+        <SubTitle>
+          Poniżej znajdują się informacje szczegółowe użytkownika, jego zdjęcia
+          oraz posty.
+        </SubTitle>
         <img
           className="user-avatar"
           src={avatarUrl || "/default-user-avatar.jpg"}
           alt="Avatar"
         />
-        <h2>Informacje o użytkowniku</h2>
-        <p>
-          <strong>Email:</strong> {user.email}
-        </p>
-        <p>
-          <strong>User name:</strong> {username}
-        </p>
+        <UserDetailContainer>
+          <p>
+            <strong>Email:</strong>
+            <UserDetail> {user.email}</UserDetail>
+          </p>
+          <p>
+            <strong>Nazwa:</strong>
+            <UserDetail>{username}</UserDetail>
+          </p>
+        </UserDetailContainer>
 
         {isEditing && (
-          <>
-            <Input
-              type="text"
-              placeholder="Nazwa użytkownika"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
-            <FileInput
-              type="file"
-              accept="image/*"
-              onChange={(e) => setAvatarFile(e.target.files?.[0] || null)}
-            />
+          <ChangeUserDetailsSection>
+            <ChangeUserDetailsContainer>
+              <strong>Nowa nazwa:</strong>
+              <Input
+                type="text"
+                placeholder="Nazwa użytkownika"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
+            </ChangeUserDetailsContainer>
+            <ChangeUserDetailsContainer>
+              <strong>Nowy avatar:</strong>
+              <FileInput
+                type="file"
+                accept="image/*"
+                onChange={(e) => setAvatarFile(e.target.files?.[0] || null)}
+              />
+            </ChangeUserDetailsContainer>
             <ButtonsContainer>
               <PrimaryButton onClick={handleUpdateProfile}>
                 Zapisz zmiany
               </PrimaryButton>
               <Button onClick={() => setIsEditing(false)}>Anuluj</Button>
             </ButtonsContainer>
-          </>
+          </ChangeUserDetailsSection>
         )}
         {!isEditing && (
           <PrimaryButton onClick={() => setIsEditing(true)}>
@@ -190,6 +204,44 @@ const UserPage = () => {
 
 export default UserPage;
 
+const ChangeUserDetailsContainer = styled.div`
+  display: flex;
+  gap: 10px;
+
+  strong {
+    max-width: 60px;
+    text-align: center;
+  }
+
+  input[type="file"] {
+    padding: 10px;
+    border-radius: 8px;
+    background: #ffffff17;
+    backdrop-filter: blur(10px);
+  }
+`;
+
+const ChangeUserDetailsSection = styled.div`
+  display: flex;
+  margin-bottom: 14px;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+`;
+
+const UserDetailContainer = styled.div`
+  display: flex;
+  margin-bottom: 14px;
+  flex-direction: column;
+  align-items: center;
+`;
+
+const UserDetail = styled.span`
+  color: #ffffffa4;
+  display: inline-block;
+  padding: 3px;
+`;
+
 const Container = styled.div`
   padding: 20px;
   display: flex;
@@ -209,6 +261,7 @@ const ProfileSection = styled.div`
     border-radius: 50%;
     object-fit: cover;
     margin: 20px 0 15px;
+    box-shadow: 0 0 10px 1px #00000069;
   }
 `;
 

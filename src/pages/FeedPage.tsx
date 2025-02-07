@@ -17,6 +17,7 @@ import {
 } from "../components/ui/FileUpload";
 import { handleDeletePhoto } from "../utils/photoUtils";
 import ButtonsContainer from "../components/ui/ButtonsContainer";
+import SubTitle from "../components/ui/SubTitle";
 
 const FeedPage = () => {
   const [photos, setPhotos] = useState<Photo[]>([]);
@@ -251,7 +252,9 @@ const FeedPage = () => {
               key={photo.id}
               photo={photo}
               userId={userId}
-              handleDeletePhoto={() => handleDeletePhoto(photo.id, setPhotos, photos)}
+              handleDeletePhoto={() =>
+                handleDeletePhoto(photo.id, setPhotos, photos)
+              }
             />
           ))}
       </PhotoGrid>
@@ -321,13 +324,6 @@ const SearchIcon = styled(FontAwesomeIcon)`
   transform: translateY(-50%);
   font-size: 14px;
   color: ${({ theme }) => theme.colors.secondary};
-`;
-
-const SubTitle = styled.span`
-  padding-top: 10px;
-  color: #a4a4a4;
-  display: block;
-  max-width: 490px;
 `;
 
 const Container = styled.div`
