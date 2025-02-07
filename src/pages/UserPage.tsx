@@ -12,6 +12,7 @@ import Input from "../components/ui/Input";
 import { FileInput } from "../components/ui/FileUpload";
 import ButtonsContainer from "../components/ui/ButtonsContainer";
 import SubTitle from "../components/ui/SubTitle";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 const UserPage = () => {
   const [user, setUser] = useState<User>(null);
@@ -110,7 +111,7 @@ const UserPage = () => {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <LoadingSpinner />;
   if (!user) return <div>Musisz być zalogowany, aby przeglądać tę stronę.</div>;
 
   return (

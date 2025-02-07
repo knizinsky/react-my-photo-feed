@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../supabaseClient";
 import styled from "styled-components";
+import Input from "../components/ui/Input";
+import { PrimaryButton } from "../components/ui/Button";
 
 const AuthPage = () => {
   const [email, setEmail] = useState("");
@@ -25,16 +27,14 @@ const AuthPage = () => {
         if (error) throw error;
 
         if (data.user) {
-          const { error: insertError } = await supabase
-            .from("users")
-            .insert([
-              {
-                id: data.user.id,
-                email: data.user.email,
-                username,
-                created_at: new Date().toISOString(),
-              },
-            ]);
+          const { error: insertError } = await supabase.from("users").insert([
+            {
+              id: data.user.id,
+              email: data.user.email,
+              username,
+              created_at: new Date().toISOString(),
+            },
+          ]);
 
           if (insertError) throw insertError;
         }
@@ -51,29 +51,29 @@ const AuthPage = () => {
       <Form>
         <h2>{isLogin ? "Logowanie" : "Rejestracja"}</h2>
         {!isLogin && (
-          <input
+          <Input
             type="text"
             placeholder="Nazwa użytkownika"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
           />
         )}
-        <input
+        <Input
           type="email"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
-        <input
+        <Input
           type="password"
           placeholder="Hasło"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
         {error && <Error>{error}</Error>}
-        <button onClick={handleAuth}>
+        <PrimaryButton onClick={handleAuth}>
           {isLogin ? "Zaloguj się" : "Zarejestruj się"}
-        </button>
+        </PrimaryButton>
         <Toggle onClick={() => setIsLogin(!isLogin)}>
           {isLogin
             ? "Nie masz konta? Zarejestruj się!"
@@ -91,36 +91,26 @@ const Container = styled.div`
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background: #f7f7f7;
 `;
 
 const Form = styled.div`
+  border: 1px solid #4040408c;
+  border-radius: 8px;
+  padding: 29px;
+  text-align: center;
+  background: #00000047;
+  box-shadow: 6px 8px 9px 3px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  color: #ffffff99;
+  background-image: linear-gradient(356deg, #00000014, #ffffff00);
   display: flex;
   flex-direction: column;
-  padding: 20px;
-  border: 1px solid #ddd;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  gap: 12px;
 
-  input {
-    margin-bottom: 10px;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
-
-  button {
-    padding: 10px;
-    border: none;
-    background: #007bff;
-    color: white;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-
-  button:hover {
-    background: #0056b3;
+  h2 {
+    color: #ffffffbd;
+    margin-bottom: 6px;
+    margin-top: -4px;
   }
 `;
 
@@ -132,7 +122,7 @@ const Error = styled.div`
 const Toggle = styled.button`
   background: none;
   border: none;
-  color: #007bff;
+  color: #d8d8d8;
   margin-top: 10px;
   cursor: pointer;
 
