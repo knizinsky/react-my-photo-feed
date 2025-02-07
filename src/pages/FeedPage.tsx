@@ -5,7 +5,11 @@ import { fetchAlbums, fetchPhotos, getUser } from "../services/supabaseService";
 import { Photo } from "../types/Photo";
 import { Album } from "../types/Album";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import {
+  faPlus,
+  faSearch,
+  faTrashCan,
+} from "@fortawesome/free-solid-svg-icons";
 
 const FeedPage = () => {
   const [photos, setPhotos] = useState<Photo[]>([]);
@@ -155,65 +159,81 @@ const FeedPage = () => {
       </Header>
 
       <ButtonsContainer>
-        <AddPhotoSection>
+        <div>
           {!showAddPhotoForm ? (
-            <PrimaryButton onClick={() => setShowAddPhotoForm(true)}>
-              Dodaj zdjęcie
-            </PrimaryButton>
+            !showAddAlbumForm ? (
+              <PrimaryButton onClick={() => setShowAddPhotoForm(true)}>
+                Dodaj zdjęcie
+              </PrimaryButton>
+            ) : null
           ) : (
             <PhotoForm>
-              <h2>Dodaj nowe zdjęcie</h2>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => setNewPhotoFile(e.target.files?.[0] || null)}
-              />
-              <input
+              <SubHeader>Dodaj nowe zdjęcie</SubHeader>
+              <FileInputContainer>
+                <FileInput
+                  id="file-upload"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setNewPhotoFile(e.target.files?.[0] || null)}
+                />
+                {newPhotoFile && <FileName>{newPhotoFile.name}</FileName>}
+              </FileInputContainer>
+              <Input
                 type="text"
                 placeholder="Opis zdjęcia"
                 value={newPhotoDescription}
                 onChange={(e) => setNewPhotoDescription(e.target.value)}
               />
-              <select
+              <StyledSelect
                 value={selectedAlbum}
                 onChange={(e) => setSelectedAlbum(e.target.value)}
               >
-                <option value="">Wybierz album</option>
+                <StyledOption value="">Wybierz album</StyledOption>
                 {albums.map((album) => (
-                  <option key={album.id} value={album.id}>
+                  <StyledOption key={album.id} value={album.id}>
                     {album.name}
-                  </option>
+                  </StyledOption>
                 ))}
-              </select>
-              <Button onClick={handleAddPhoto}>Dodaj zdjęcie</Button>
-              <Button secondary onClick={() => setShowAddPhotoForm(false)}>
-                Anuluj
-              </Button>
+              </StyledSelect>
+              <DecisionButtons>
+                <PrimaryButton onClick={handleAddPhoto}>
+                  <FontAwesomeIcon icon={faPlus} /> Dodaj zdjęcie
+                </PrimaryButton>
+                <Button secondary onClick={() => setShowAddPhotoForm(false)}>
+                  Anuluj
+                </Button>
+              </DecisionButtons>
             </PhotoForm>
           )}
-        </AddPhotoSection>
+        </div>
 
-        <AddAlbumSection>
+        <div>
           {!showAddAlbumForm ? (
-            <Button onClick={() => setShowAddAlbumForm(true)}>
-              Dodaj album
-            </Button>
+            !showAddPhotoForm ? (
+              <Button onClick={() => setShowAddAlbumForm(true)}>
+                Dodaj album
+              </Button>
+            ) : null
           ) : (
             <AlbumForm>
-              <h2>Dodaj nowy album</h2>
-              <input
+              <SubHeader>Dodaj nowy album</SubHeader>
+              <Input
                 type="text"
                 placeholder="Nazwa albumu"
                 value={newAlbumName}
                 onChange={(e) => setNewAlbumName(e.target.value)}
               />
-              <Button onClick={handleAddAlbum}>Dodaj album</Button>
-              <Button secondary onClick={() => setShowAddAlbumForm(false)}>
-                Anuluj
-              </Button>
+              <DecisionButtons>
+                <PrimaryButton onClick={handleAddAlbum}>
+                  Dodaj album
+                </PrimaryButton>
+                <Button secondary onClick={() => setShowAddAlbumForm(false)}>
+                  Anuluj
+                </Button>
+              </DecisionButtons>
             </AlbumForm>
           )}
-        </AddAlbumSection>
+        </div>
       </ButtonsContainer>
 
       <FilterSection>
@@ -233,37 +253,27 @@ const FeedPage = () => {
       </FilterSection>
 
       <PhotoGrid>
-        {photos.map((photo) =>
-          filterUser ? (
-            photo.users?.username
-              .toLowerCase()
-              .includes(filterUser.toLowerCase()) ? (
-              <PhotoCard key={photo.id}>
-                <img src={photo.url} alt={photo.description} />
-                <PhotoTitle>{photo.description}</PhotoTitle>
-                <p>Album: {photo.albums?.name}</p>
-                <p>Autor: {photo.users?.username}</p>
-                <Button onClick={() => handleDeletePhoto(photo.id)}>
-                  Usuń
-                </Button>
-              </PhotoCard>
-            ) : (
-              ""
-            )
-          ) : (
+        {photos
+          .filter(
+            (photo) =>
+              !filterUser ||
+              photo.users?.username
+                .toLowerCase()
+                .includes(filterUser.toLowerCase())
+          )
+          .map((photo) => (
             <PhotoCard key={photo.id}>
               <img src={photo.url} alt={photo.description} />
               <PhotoTitle>{photo.description}</PhotoTitle>
               <p>Album: {photo.albums?.name}</p>
               <p>Autor: {photo.users?.username}</p>
               {userId === photo.user_id && (
-                <Button onClick={() => handleDeletePhoto(photo.id)}>
-                  Usuń
-                </Button>
+                <ButtonSmall onClick={() => handleDeletePhoto(photo.id)}>
+                  <FontAwesomeIcon icon={faTrashCan} /> Usuń
+                </ButtonSmall>
               )}
             </PhotoCard>
-          )
-        )}
+          ))}
       </PhotoGrid>
     </Container>
   );
@@ -271,11 +281,121 @@ const FeedPage = () => {
 
 export default FeedPage;
 
+const SubHeader = styled.h2`
+  margin: 0 36px 6px;
+  color: #c6c6c6;
+`;
+
+const Input = styled.input`
+  padding: 10px;
+  border: 1px solid #cccccc9b;
+  border-radius: 4px;
+  width: 100%;
+  max-width: 300px;
+  background: #ffffff17;
+  backdrop-filter: blur(10px);
+  color: #fff;
+  &:focus {
+    outline: 1px solid #ffffff92;
+  }
+`;
+
+const StyledSelect = styled.select`
+  padding: 10px;
+  border: 1px solid #ffffff7e;
+  border-radius: 4px;
+  width: 100%;
+  max-width: 300px;
+  background: #ffffff17;
+  backdrop-filter: blur(10px);
+  color: #fff;
+  cursor: pointer;
+  position: relative;
+
+  &::after {
+    content: "▼";
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #fff;
+    pointer-events: none;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: #d2d2d2;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  }
+`;
+
+const StyledOption = styled.option`
+  color: #000;
+  background: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+
+  &[selected] {
+    background: linear-gradient(45deg, #88312a, #43155d);
+    color: #fff;
+  }
+
+  &[value=""] {
+    color: #b3b3b3;
+  }
+
+  &:hover {
+    background: linear-gradient(45deg, #88312a, #43155d);
+    color: #fff;
+  }
+`;
+
+const DecisionButtons = styled.div`
+  display: flex;
+  gap: 12px;
+  button {
+    width: 100%;
+  }
+`;
+
+const FileInputContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`;
+
+const FileInput = styled.input`
+  &[type="file"] {
+    border: 1px dashed #f2f2f2ac;
+  }
+
+  &[type="file"]::file-selector-button {
+    font-family: "Geist", sans-serif;
+    padding: 6px 12px;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    margin-right: 10px;
+    cursor: pointer;
+    transition: filter 0.3s;
+    background-image: linear-gradient(272deg, #c6c6c6, #ffffff);
+    color: #000000;
+
+    &:hover {
+      filter: brightness(1.2);
+    }
+  }
+`;
+
+const FileName = styled.span`
+  font-size: 14px;
+  color: ${({ theme }) => theme.colors.text};
+`;
+
 const FilterContainer = styled.div`
   position: relative;
   width: 100%;
   max-width: 300px;
-  margin-bottom: 20px;
+  margin-bottom: 2px;
 `;
 
 const FilterWrapper = styled.div`
@@ -339,6 +459,8 @@ const Container = styled.div`
 const ButtonsContainer = styled.div`
   display: flex;
   justify-content: center;
+  align-items: center;
+  gap: 18px;
 `;
 
 const Header = styled.header`
@@ -364,10 +486,6 @@ const FilterSection = styled.div`
   }
 `;
 
-const AddAlbumSection = styled.div`
-  margin: 10px 15px;
-`;
-
 const AlbumForm = styled.div`
   display: flex;
   flex-direction: column;
@@ -375,15 +493,10 @@ const AlbumForm = styled.div`
 
   input {
     padding: 10px;
-    border: 1px solid #ccc;
     border-radius: 4px;
     width: 100%;
     max-width: 300px;
   }
-`;
-
-const AddPhotoSection = styled.div`
-  margin: 10px 15px;
 `;
 
 const PhotoForm = styled.div`
@@ -394,10 +507,13 @@ const PhotoForm = styled.div`
   input,
   select {
     padding: 10px;
-    border: 1px solid #ccc;
     border-radius: 4px;
     width: 100%;
     max-width: 300px;
+    background: #ffffff17;
+    backdrop-filter: blur(10px);
+    color: #fff;
+    border: 1px solid #ffffff7e;
   }
 `;
 
@@ -416,17 +532,45 @@ const PhotoCard = styled.div`
   box-shadow: 6px 8px 9px 3px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(10px);
   color: #ffffff99;
+  background-image: linear-gradient(309deg, #00000026, #ffffff12);
 
   img {
     max-width: 100%;
     height: auto;
     border-radius: 8px;
-    border: 1px solid #434343;
+    border: 1px solid #5a5a5a;
     max-height: 170px;
+    box-shadow: 1px 14px 20px 0px #00000033;
   }
 
   p {
     margin: 10px 0;
+  }
+`;
+
+const ButtonSmall = styled.button<{ secondary?: boolean }>`
+  padding: 7px 13px;
+  margin: 4px;
+  background: ${({ secondary }) => (secondary ? "#6c757d" : "#007bff")};
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: filter 0.3s;
+  background-image: linear-gradient(272deg, #c6c6c6, #ffffff);
+  color: #000000;
+  box-shadow: 1px 14px 20px 0px #00000033;
+
+  &:hover {
+    filter: brightness(1.2);
+  }
+
+  & + & {
+    margin-left: 10px;
+  }
+
+  svg {
+    margin-right: 6px;
   }
 `;
 
@@ -440,6 +584,7 @@ const Button = styled.button<{ secondary?: boolean }>`
   transition: filter 0.3s;
   background-image: linear-gradient(272deg, #c6c6c6, #ffffff);
   color: #000000;
+  box-shadow: 1px 14px 20px 0px #0000001e;
 
   &:hover {
     filter: brightness(1.2);
@@ -447,6 +592,10 @@ const Button = styled.button<{ secondary?: boolean }>`
 
   & + & {
     margin-left: 10px;
+  }
+
+  svg {
+    margin-right: 6px;
   }
 `;
 
@@ -459,6 +608,7 @@ const PrimaryButton = styled.button<{ secondary?: boolean }>`
   cursor: pointer;
   transition: filter 0.3s;
   background-image: linear-gradient(45deg, #88312a, #43155d);
+  box-shadow: 1px 14px 20px 0px #0000001e;
 
   &:hover {
     filter: brightness(1.2);
@@ -466,5 +616,9 @@ const PrimaryButton = styled.button<{ secondary?: boolean }>`
 
   & + & {
     margin-left: 10px;
+  }
+
+  svg {
+    margin-right: 6px;
   }
 `;
