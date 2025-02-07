@@ -4,6 +4,8 @@ import styled from "styled-components";
 import { fetchAlbums, fetchPhotos, getUser } from "../services/supabaseService";
 import { Photo } from "../types/Photo";
 import { Album } from "../types/Album";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSearch } from "@fortawesome/free-solid-svg-icons";
 
 const FeedPage = () => {
   const [photos, setPhotos] = useState<Photo[]>([]);
@@ -155,9 +157,9 @@ const FeedPage = () => {
       <ButtonsContainer>
         <AddPhotoSection>
           {!showAddPhotoForm ? (
-            <Button onClick={() => setShowAddPhotoForm(true)}>
+            <PrimaryButton onClick={() => setShowAddPhotoForm(true)}>
               Dodaj zdjęcie
-            </Button>
+            </PrimaryButton>
           ) : (
             <PhotoForm>
               <h2>Dodaj nowe zdjęcie</h2>
@@ -215,12 +217,19 @@ const FeedPage = () => {
       </ButtonsContainer>
 
       <FilterSection>
-        <input
-          type="text"
-          placeholder="Filtruj po użytkowniku"
-          value={filterUser}
-          onChange={(e) => setFilterUser(e.target.value)}
-        />
+        <FilterContainer>
+          {!filterUser && <SearchIcon icon={faSearch} />}
+          <FilterWrapper>
+            {!filterUser && (
+              <PlaceholderText>Filtruj po użytkowniku</PlaceholderText>
+            )}
+            <FilterInput
+              type="text"
+              value={filterUser}
+              onChange={(e) => setFilterUser(e.target.value)}
+            />
+          </FilterWrapper>
+        </FilterContainer>
       </FilterSection>
 
       <PhotoGrid>
@@ -262,6 +271,51 @@ const FeedPage = () => {
 
 export default FeedPage;
 
+const FilterContainer = styled.div`
+  position: relative;
+  width: 100%;
+  max-width: 300px;
+  margin-bottom: 20px;
+`;
+
+const FilterWrapper = styled.div`
+  position: relative;
+  width: 100%;
+  max-width: 300px;
+`;
+
+const PlaceholderText = styled.span`
+  position: absolute;
+  left: 30px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: gray;
+  pointer-events: none;
+  font-size: 14px;
+`;
+
+const FilterInput = styled.input`
+  background: none;
+  width: 100%;
+  padding: 10px 10px 10px 20px;
+  border: 1px solid #4e4e4e;
+  color: #fff;
+  border-radius: 4px;
+
+  &:focus + ${PlaceholderText} {
+    display: none;
+  }
+`;
+
+const SearchIcon = styled(FontAwesomeIcon)`
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%);
+  font-size: 14px;
+  color: ${({ theme }) => theme.colors.secondary};
+`;
+
 const PhotoTitle = styled.p`
   font-size: 18px;
   font-weight: 600;
@@ -296,11 +350,14 @@ const Header = styled.header`
 `;
 
 const FilterSection = styled.div`
+  display: flex;
+  justify-content: flex-end;
   margin-bottom: 20px;
 
   input {
     padding: 10px;
-    border: 1px solid #ccc;
+    border: 1px solid #4e4e4e;
+    color: #fff;
     border-radius: 4px;
     width: 100%;
     max-width: 300px;
@@ -360,12 +417,12 @@ const PhotoCard = styled.div`
   backdrop-filter: blur(10px);
   color: #ffffff99;
 
-
   img {
     max-width: 100%;
     height: auto;
     border-radius: 8px;
     border: 1px solid #434343;
+    max-height: 170px;
   }
 
   p {
@@ -380,10 +437,31 @@ const Button = styled.button<{ secondary?: boolean }>`
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: filter 0.3s;
+  background-image: linear-gradient(272deg, #c6c6c6, #ffffff);
+  color: #000000;
 
   &:hover {
-    background: ${({ secondary }) => (secondary ? "#5a6268" : "#0056b3")};
+    filter: brightness(1.2);
+  }
+
+  & + & {
+    margin-left: 10px;
+  }
+`;
+
+const PrimaryButton = styled.button<{ secondary?: boolean }>`
+  padding: 10px 20px;
+  background: ${({ secondary }) => (secondary ? "#6c757d" : "#007bff")};
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: filter 0.3s;
+  background-image: linear-gradient(45deg, #88312a, #43155d);
+
+  &:hover {
+    filter: brightness(1.2);
   }
 
   & + & {

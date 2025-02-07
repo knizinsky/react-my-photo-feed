@@ -4,6 +4,15 @@ import { supabase } from "../supabaseClient";
 import styled from "styled-components";
 import { UserResponse } from "@supabase/supabase-js";
 import { getUser, signOut } from "../services/supabaseService";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faAddressCard,
+  faComments,
+  faImages,
+  faRightFromBracket,
+  faSquareShareNodes,
+  faUserGroup,
+} from "@fortawesome/free-solid-svg-icons";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -43,11 +52,29 @@ const Header = () => {
     <HeaderContainer>
       <Nav>
         <NavLinks>
-          <StyledLink to="/feed">Social Photo</StyledLink> <span> | </span>
-          <StyledLink to="/feed">Feed</StyledLink>
-          <StyledLink to="/user">Profile</StyledLink>
-          <StyledLink to="/posts">Posts</StyledLink>
-          <StyledLink to="/user-list">Users</StyledLink>
+          <LogoContainer>
+            <LinkContainer>
+              <FontAwesomeIcon icon={faSquareShareNodes} />
+              <StyledLink to="/feed">Social Photo</StyledLink>
+            </LinkContainer>
+          </LogoContainer>
+          <Separator> | </Separator>
+          <LinkContainer>
+            <FontAwesomeIcon icon={faImages} />
+            <StyledLink to="/feed">Feed</StyledLink>
+          </LinkContainer>
+          <LinkContainer>
+            <FontAwesomeIcon icon={faAddressCard} />
+            <StyledLink to="/user">Profile</StyledLink>
+          </LinkContainer>
+          <LinkContainer>
+            <FontAwesomeIcon icon={faComments} />
+            <StyledLink to="/posts">Posts</StyledLink>
+          </LinkContainer>
+          <LinkContainer>
+            <FontAwesomeIcon icon={faUserGroup} />
+            <StyledLink to="/user-list">Users</StyledLink>
+          </LinkContainer>
         </NavLinks>
 
         {user ? (
@@ -57,7 +84,10 @@ const Header = () => {
               alt="User Avatar"
             />
             <Username>{username}</Username>
-            <LogoutButton onClick={handleLogout}>Logout</LogoutButton>
+            <LogoutContainer>
+              <LogoutButton onClick={handleLogout}>Logout</LogoutButton>
+              <FontAwesomeIcon icon={faRightFromBracket} />
+            </LogoutContainer>
           </UserSection>
         ) : (
           <StyledLink to="/auth">Login</StyledLink>
@@ -69,12 +99,44 @@ const Header = () => {
 
 export default Header;
 
+const Separator = styled.span`
+  color: #ababab;
+`;
+
+const LogoContainer = styled.div`
+  margin-left: 22px;
+  div a {
+    color: white;
+    font-weight: 600;
+  }
+`;
+
+const LinkContainer = styled.div`
+  color: #ababab;
+  a {
+    margin-left: 8px;
+    color: #ababab;
+  }
+`;
+
+const LogoutContainer = styled.div`
+  * {
+    color: #ababab;
+  }
+
+  button {
+    color: #ababab;
+    padding-right: 10px;
+  }
+`;
+
 const HeaderContainer = styled.header`
   width: 100%;
-  padding: 1rem;
-  background-color: #b9b9b900;
+  padding: 10px;
+  background-color: #ffffff0a;
   color: white;
-  backdrop-filter: blur(15px);
+  backdrop-filter: blur(10px);
+  background: radial-gradient(#ffffff05, #ffffff00) 101%;
 `;
 
 const Nav = styled.nav`
@@ -85,7 +147,7 @@ const Nav = styled.nav`
 
 const NavLinks = styled.div`
   display: flex;
-  gap: 1.5rem;
+  gap: 30px;
 `;
 
 const StyledLink = styled(Link)`
@@ -102,18 +164,19 @@ const UserSection = styled.div`
   display: flex;
   align-items: center;
   gap: 1rem;
+  margin: 0 12px;
 `;
 
 const Avatar = styled.img`
-  width: 40px;
-  height: 40px;
+  width: 37px;
+  height: 37px;
   border-radius: 50%;
   object-fit: cover;
+  box-shadow: 0 0 10px #0000006e;
 `;
 
 const Username = styled.span`
   font-size: 16px;
-  font-weight: bold;
 `;
 
 const LogoutButton = styled.button`

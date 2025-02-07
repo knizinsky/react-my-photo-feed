@@ -17,8 +17,10 @@ export const GlobalStyles = createGlobalStyle`
   body {
     font-family: ${({ theme }) => theme?.fonts?.main || "sans-serif"};
     background-color: ${({ theme }) => theme?.colors?.background || "#000"};
-    background-image: linear-gradient(8deg, rgb(0 34 69 / 93%), rgb(0 0 0 / 94%)), url(../../public/background.jpg);
+    background-image: linear-gradient(0deg, rgb(40 27 138 / 0%) -300%, rgb(0 0 0 / 88%)), url(../../public/background.jpg);
     color: ${({ theme }) => theme?.colors?.text || "#fff"};
+    background-position: center;
+    background-size: cover;
   }
 
   html {
