@@ -30,7 +30,8 @@ Social Photo Feed to aplikacja społecznościowa do udostępniania zdjęć, zbud
 
    ```sh
    git clone https://github.com/your-username/your-repo.git
-   cd your-repo```
+   cd your-repo
+   ```
 
 2. Zainstaluj zależności:
 
