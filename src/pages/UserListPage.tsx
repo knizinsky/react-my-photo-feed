@@ -5,10 +5,12 @@ import { User } from "../types/User";
 import SubTitle from "../components/ui/SubTitle";
 import Input from "../components/ui/Input";
 import Avatar from "../components/ui/Avatar";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 const UserListPage = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -25,10 +27,13 @@ const UserListPage = () => {
       } else {
         setUsers(data);
       }
+      setLoading(false);
     };
 
     fetchUsers();
   }, [searchTerm]);
+
+  if (loading) return <LoadingSpinner />;
 
   return (
     <Container>

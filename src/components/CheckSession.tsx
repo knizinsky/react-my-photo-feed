@@ -7,7 +7,16 @@ const CheckSession: () => ReactNode = () => {
 
   useEffect(() => {
     const checkSession = async () => {
-      await supabase.auth.getSession();
+      try {
+        const { data, error } = await supabase.auth.getSession();
+        if (error) throw error;
+        if (!data.session) {
+          navigate("/auth");
+        }
+      } catch (error) {
+        console.error("Error checking session:", error);
+        navigate("/auth");
+      }
     };
 
     checkSession();

@@ -10,6 +10,7 @@ import { faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import TextArea from "../components/ui/TextArea";
 import Input from "../components/ui/Input";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 const PostsPage = () => {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -20,6 +21,7 @@ const PostsPage = () => {
   }>({});
   const [showAddPostButton, setShowAddPostButton] = useState(false);
   const [currentUser, setCurrentUser] = useState<User>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchCurrentUser = async () => {
@@ -42,6 +44,7 @@ const PostsPage = () => {
     } else {
       setPosts(posts);
     }
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -123,6 +126,8 @@ const PostsPage = () => {
       setNewCommentContent({ ...newCommentContent, [postId]: "" });
     }
   };
+
+  if (loading) return <LoadingSpinner />;
 
   return (
     <Container>

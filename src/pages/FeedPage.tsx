@@ -18,6 +18,7 @@ import {
 import { handleDeletePhoto } from "../utils/photoUtils";
 import ButtonsContainer from "../components/ui/ButtonsContainer";
 import SubTitle from "../components/ui/SubTitle";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 const FeedPage = () => {
   const [photos, setPhotos] = useState<Photo[]>([]);
@@ -30,6 +31,7 @@ const FeedPage = () => {
   const [showAddAlbumForm, setShowAddAlbumForm] = useState(false);
   const [showAddPhotoForm, setShowAddPhotoForm] = useState(false);
   const [userId, setUserId] = useState<string>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -57,6 +59,7 @@ const FeedPage = () => {
     } catch (error) {
       console.error("Error fetching data:", error);
     }
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -138,6 +141,8 @@ const FeedPage = () => {
       setShowAddAlbumForm(false);
     }
   };
+
+  if (loading) return <LoadingSpinner />;
 
   return (
     <Container>

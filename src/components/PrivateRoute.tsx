@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { getSession } from "../services/supabaseService";
 import { PrivateRouteProps } from "../types/PrivateRouteProps";
+import LoadingSpinner from "./LoadingSpinner";
 
 const PrivateRoute = ({ children }: PrivateRouteProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
@@ -21,7 +22,7 @@ const PrivateRoute = ({ children }: PrivateRouteProps) => {
   }, []);
 
   if (isAuthenticated === null) {
-    return <div>Loading...</div>;
+    return <LoadingSpinner />;
   }
 
   if (!isAuthenticated) {

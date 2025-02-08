@@ -55,7 +55,12 @@ const Card = styled.div`
   }
 
   p {
-    margin: 10px 0;
+    margin: 6px 0;
+  }
+
+  button{
+    padding: 5px 10px;
+    margin-top: 6px;
   }
 `;
 
