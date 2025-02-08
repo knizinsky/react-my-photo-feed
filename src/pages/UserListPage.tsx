@@ -87,7 +87,9 @@ const Container = styled.div`
 
 const SearchSection = styled.div`
   margin: 10px 0 26px;
-  z-index: -10;
+  @media (max-width: 992px) {
+    z-index: -10;
+  }
 `;
 
 const UserList = styled.div`

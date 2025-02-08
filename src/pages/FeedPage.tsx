@@ -32,6 +32,7 @@ const FeedPage = () => {
   const [showAddPhotoForm, setShowAddPhotoForm] = useState(false);
   const [userId, setUserId] = useState<string>(null);
   const [loading, setLoading] = useState(true);
+  const [isAddingPhoto, setIsAddingPhoto] = useState(false);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -42,10 +43,6 @@ const FeedPage = () => {
     };
 
     fetchUser();
-  }, []);
-
-  useEffect(() => {
-    fetchPhotosAndAlbums();
   }, []);
 
   const fetchPhotosAndAlbums = async () => {
@@ -79,10 +76,11 @@ const FeedPage = () => {
       return;
     }
 
+    setIsAddingPhoto(true);
+
     try {
       const fileExt = newPhotoFile.name.split(".").pop();
-      const fileName = `${user.id}-${Date.now()}.${fileExt}`;
-      const filePath = `${fileName}`;
+      const filePath = `${user.id}-${Date.now()}.${fileExt}`;
 
       const { error: uploadError } = await supabase.storage
         .from("photos")
@@ -113,6 +111,8 @@ const FeedPage = () => {
     } catch (error) {
       console.error("Error adding photo:", error);
       alert("Wystąpił błąd podczas dodawania zdjęcia.");
+    } finally {
+      setIsAddingPhoto(false); // Stop loading
     }
   };
 
@@ -196,8 +196,14 @@ const FeedPage = () => {
               ))}
             </Select>
             <DecisionButtons>
-              <PrimaryButton onClick={handleAddPhoto}>
-                <FontAwesomeIcon icon={faPlus} /> Dodaj zdjęcie
+              <PrimaryButton onClick={handleAddPhoto} disabled={isAddingPhoto}>
+                {isAddingPhoto ? (
+                  <LoadingSpinner />
+                ) : (
+                  <>
+                    <FontAwesomeIcon icon={faPlus} /> Dodaj zdjęcie
+                  </>
+                )}
               </PrimaryButton>
               <Button secondary onClick={() => setShowAddPhotoForm(false)}>
                 Anuluj
