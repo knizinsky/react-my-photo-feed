@@ -1,50 +1,102 @@
-# React + TypeScript + Vite
+# 📸 Social Photo Feed
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+![GitHub repo size](https://img.shields.io/github/repo-size/knizinsky/react-my-photo-feed)
+![GitHub contributors](https://img.shields.io/github/contributors/knizinsky/react-my-photo-feed)
+![GitHub stars](https://img.shields.io/github/stars/knizinsky/react-my-photo-feed?style=social)
+![GitHub forks](https://img.shields.io/github/forks/knizinsky/react-my-photo-feed?style=social)
 
-Currently, two official plugins are available:
+Social Photo Feed to aplikacja społecznościowa do udostępniania zdjęć, zbudowana przy użyciu React, TypeScript i Vite. Użytkownicy mogą dodawać zdjęcia, posty, komentować oraz przeglądać profile innych użytkowników.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Funkcje
 
-## Expanding the ESLint configuration
+- 📸 Dodawanie i przeglądanie zdjęć
+- 📝 Tworzenie i przeglądanie postów
+- 💬 Komentowanie postów
+- 👤 Przeglądanie profili użytkowników
+- 🔒 Autoryzacja i uwierzytelnianie za pomocą Supabase
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+## 🛠️ Technologie
 
-- Configure the top-level `parserOptions` property like this:
+- **React** - Biblioteka do budowania interfejsów użytkownika
+- **TypeScript** - Język programowania z typowaniem statycznym
+- **Vite** - Narzędzie do budowania aplikacji
+- **Supabase** - Backend jako usługa (BaaS)
+- **Styled Components** - Stylowanie komponentów w React
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+## 📦 Instalacja
+
+1. Sklonuj repozytorium:
+
+   ```sh
+   git clone https://github.com/your-username/your-repo.git
+   cd your-repo```
+
+2. Zainstaluj zależności:
+
+```sh 
+npm install
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+3. Skonfiguruj zmienne środowiskowe w pliku .env:
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+```sh
+VITE_SUPABASE_URL=your-supabase-url
+VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
 ```
+
+4. Uruchom aplikację w trybie deweloperskim:
+
+```sh
+npm run dev
+```
+
+## 📄 Skrypty
+
+- `npm run dev` - Uruchamia aplikację w trybie deweloperskim
+- `npm run build` - Buduje aplikację do produkcji
+- `npm run lint` - Uruchamia ESLint w celu sprawdzenia kodu
+- `npm run preview` - Uruchamia podgląd zbudowanej aplikacji
+
+## 📚 Struktura projektu
+```
+├── public/
+│   ├── background.jpg
+│   ├── default-user-avatar.jpg
+│   └── favicon.jpg
+├── src/
+│   ├── components/
+│   │   ├── CheckSession.tsx
+│   │   ├── Header.tsx
+│   │   ├── Layout.tsx
+│   │   ├── LoadingSpinner.tsx
+│   │   ├── PhotoCard.tsx
+│   │   ├── PrivateRoute.tsx
+│   │   └── ui/
+│   ├── pages/
+│   │   ├── AuthPage.tsx
+│   │   ├── FeedPage.tsx
+│   │   ├── NotFoundPage.tsx
+│   │   ├── PostsPage.tsx
+│   │   └── UserPage.tsx
+│   ├── routes/
+│   ├── services/
+│   ├── styles/
+│   ├── types/
+│   ├── utils/
+│   ├── App.tsx
+│   ├── main.tsx
+│   └── supabaseClient.ts
+├── .env
+├── .gitignore
+├── eslint.config.js
+├── index.html
+├── package.json
+├── README.md
+├── tsconfig.app.json
+├── tsconfig.json
+├── tsconfig.node.json
+└── vite.config.ts
+```
+
+## 🖼️ Zrzuty ekranu
+![image](https://github.com/user-attachments/assets/0d89f600-549c-46a7-bd75-da0033e7a08c)
