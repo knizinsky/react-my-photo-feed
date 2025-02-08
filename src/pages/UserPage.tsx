@@ -175,28 +175,36 @@ const UserPage = () => {
       <PhotosSection>
         <SectionTitle>Twoje zdjęcia</SectionTitle>
         <PhotoGrid>
-          {photos.map((photo) => (
-            <PhotoCard
-              key={photo.id}
-              photo={photo}
-              userId={user.id}
-              handleDeletePhoto={() =>
-                handleDeletePhoto(photo.id, setPhotos, photos)
-              }
-            />
-          ))}
+          {photos.length > 0 ? (
+            photos.map((photo) => (
+              <PhotoCard
+                key={photo.id}
+                photo={photo}
+                userId={user.id}
+                handleDeletePhoto={() =>
+                  handleDeletePhoto(photo.id, setPhotos, photos)
+                }
+              />
+            ))
+          ) : (
+            <SubTitle>Nie posiadasz żadnych zdjęć</SubTitle>
+          )}
         </PhotoGrid>
       </PhotosSection>
 
       <PostsSection>
         <SectionTitle>Twoje posty</SectionTitle>
         <PostList>
-          {posts.map((post) => (
-            <PostCard key={post.id}>
-              <h3>{post.title}</h3>
-              <p>{post.content}</p>
-            </PostCard>
-          ))}
+          {posts.length > 0 ? (
+            posts.map((post) => (
+              <PostCard key={post.id}>
+                <h3>{post.title}</h3>
+                <p>{post.content}</p>
+              </PostCard>
+            ))
+          ) : (
+            <SubTitle>Nie posiadasz żadnych postów</SubTitle>
+          )}
         </PostList>
       </PostsSection>
     </Container>

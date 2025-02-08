@@ -114,7 +114,7 @@ const FeedPage = () => {
       console.error("Error adding photo:", error);
       alert("Wystąpił błąd podczas dodawania zdjęcia.");
     } finally {
-      setIsAddingPhoto(false); // Stop loading
+      setIsAddingPhoto(false);
     }
   };
 
@@ -131,16 +131,17 @@ const FeedPage = () => {
       return;
     }
 
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from("albums")
       .insert([{ name: newAlbumName, user_id: user.id }]);
 
     if (error) {
       console.error("Error adding album:", error);
     } else {
-      setAlbums([...albums, ...data]);
       setNewAlbumName("");
       setShowAddAlbumForm(false);
+      const newAlbumList = await fetchAlbums();
+      setAlbums(newAlbumList);
     }
   };
 

@@ -50,15 +50,16 @@ const Card = styled.div`
     height: auto;
     border-radius: 8px;
     border: 1px solid #5a5a5a;
-    max-height: 170px;
+    height: 150px;
     box-shadow: 1px 14px 20px 0px #00000033;
+    width: 240px;
   }
 
   p {
     margin: 6px 0;
   }
 
-  button{
+  button {
     padding: 5px 10px;
     margin-top: 6px;
   }
