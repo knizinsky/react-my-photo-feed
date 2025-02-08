@@ -127,6 +127,35 @@ const PostsPage = () => {
     }
   };
 
+  const handleDeleteComment = async (
+    commentId: string,
+    commentUserId: string
+  ) => {
+    const user = await getUser();
+
+    if (!user) {
+      alert("Musisz być zalogowany, aby usunąć komentarz.");
+      return;
+    }
+
+    if (user.id !== commentUserId) {
+      alert("Możesz usunąć tylko swoje komentarze.");
+      return;
+    }
+
+    const { error } = await supabase
+      .from("comments")
+      .delete()
+      .eq("id", commentId)
+      .eq("user_id", user.id);
+
+    if (error) {
+      console.error("Error deleting comment:", error);
+    } else {
+      await fetchPosts();
+    }
+  };
+
   if (loading) return <LoadingSpinner />;
 
   return (
@@ -188,6 +217,15 @@ const PostsPage = () => {
                   <p>
                     <strong>{comment.user?.username}:</strong> {comment.content}
                   </p>
+                  {currentUser && comment.user_id === currentUser.id && (
+                    <ButtonSmall
+                      onClick={() =>
+                        handleDeleteComment(comment.id, comment.user_id)
+                      }
+                    >
+                      <FontAwesomeIcon icon={faTrashCan} />
+                    </ButtonSmall>
+                  )}
                 </CommentCard>
               ))}
 
@@ -327,16 +365,26 @@ const CommentsHeader = styled.span`
 `;
 
 const CommentCard = styled.div`
+  display: flex;
+  justify-content: space-between;
   border-radius: 4px;
   padding: 7px 12px;
   margin-bottom: 10px;
   background: linear-gradient(183deg, #ffffff, #dadada);
-  display: flex;
   color: #313131;
   font-size: 15px;
   border: 1px solid #b7b7b7;
   box-shadow: 0 0 9px 7px #2626261c;
   text-align: left;
+
+  button {
+    height: 28px;
+    width: 28px;
+    background: #870432;
+    color: #fff;
+    font-size: 12px;
+    padding-left: 9px;
+  }
 `;
 
 const AddCommentSection = styled.div`

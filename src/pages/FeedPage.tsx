@@ -24,6 +24,8 @@ const FeedPage = () => {
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [albums, setAlbums] = useState<Album[]>([]);
   const [filterUser, setFilterUser] = useState("");
+  const [filterAlbum, setFilterAlbum] = useState("");
+  const [filterPhotoName, setFilterPhotoName] = useState("");
   const [newPhotoFile, setNewPhotoFile] = useState<File>(null);
   const [newPhotoDescription, setNewPhotoDescription] = useState("");
   const [selectedAlbum, setSelectedAlbum] = useState("");
@@ -235,15 +237,35 @@ const FeedPage = () => {
 
       <FilterSection>
         <FilterContainer>
-          {!filterUser && <SearchIcon icon={faSearch} />}
           <FilterWrapper>
-            {!filterUser && (
-              <PlaceholderText>Filtruj po użytkowniku</PlaceholderText>
-            )}
             <FilterInput
               type="text"
+              placeholder="Filtruj po użytkowniku"
               value={filterUser}
               onChange={(e) => setFilterUser(e.target.value)}
+            />
+          </FilterWrapper>
+        </FilterContainer>
+        <FilterContainer>
+          <Select
+            value={filterAlbum}
+            onChange={(e) => setFilterAlbum(e.target.value)}
+          >
+            <Option value="">Wszystkie albumy</Option>
+            {albums.map((album) => (
+              <Option key={album.id} value={album.id}>
+                {album.name}
+              </Option>
+            ))}
+          </Select>
+        </FilterContainer>
+        <FilterContainer>
+          <FilterWrapper>
+            <FilterInput
+              type="text"
+              placeholder="Filtruj po nazwie zdjęcia"
+              value={filterPhotoName}
+              onChange={(e) => setFilterPhotoName(e.target.value)}
             />
           </FilterWrapper>
         </FilterContainer>
@@ -253,10 +275,15 @@ const FeedPage = () => {
         {photos
           .filter(
             (photo) =>
-              !filterUser ||
-              photo.users?.username
-                .toLowerCase()
-                .includes(filterUser.toLowerCase())
+              (!filterUser ||
+                photo.users?.username
+                  .toLowerCase()
+                  .includes(filterUser.toLowerCase())) &&
+              (!filterAlbum || photo.album_id === filterAlbum) &&
+              (!filterPhotoName ||
+                photo.description
+                  ?.toLowerCase()
+                  .includes(filterPhotoName.toLowerCase()))
           )
           .map((photo) => (
             <PhotoCard
@@ -295,8 +322,8 @@ const DecisionButtons = styled.div`
 const FilterContainer = styled.div`
   position: relative;
   width: 100%;
-  max-width: 300px;
-  margin-bottom: 2px;
+  max-width: 175px;
+  margin: 0 8px;
 `;
 
 const FilterWrapper = styled.div`
@@ -328,15 +355,6 @@ const FilterInput = styled.input`
   }
 `;
 
-const SearchIcon = styled(FontAwesomeIcon)`
-  position: absolute;
-  top: 50%;
-  left: 10px;
-  transform: translateY(-50%);
-  font-size: 14px;
-  color: ${({ theme }) => theme.colors.secondary};
-`;
-
 const Container = styled.div`
   padding: 20px;
   max-width: 1200px;
@@ -353,16 +371,18 @@ const Header = styled.header`
 
 const FilterSection = styled.div`
   display: flex;
-  justify-content: flex-end;
-  margin-bottom: 20px;
+  margin: 20px 0;
+  justify-content: center;
 
-  input {
+  input,
+  select {
     padding: 10px;
     border: 1px solid #4e4e4e;
-    color: #fff;
+    color: #ffffff7d;
     border-radius: 4px;
     width: 100%;
     max-width: 300px;
+    background: #ffffff0d;
   }
 `;
 
