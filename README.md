@@ -2,10 +2,11 @@
 
 ![GitHub repo size](https://img.shields.io/github/repo-size/knizinsky/react-my-photo-feed)
 ![GitHub contributors](https://img.shields.io/github/contributors/knizinsky/react-my-photo-feed)
-![GitHub stars](https://img.shields.io/github/stars/knizinsky/react-my-photo-feed?style=social)
-![GitHub forks](https://img.shields.io/github/forks/knizinsky/react-my-photo-feed?style=social)
 
 Social Photo Feed to aplikacja społecznościowa do udostępniania zdjęć, zbudowana przy użyciu React, TypeScript i Vite. Użytkownicy mogą dodawać zdjęcia, posty, komentować oraz przeglądać profile innych użytkowników.
+
+## 🖼️ Zrzuty ekranu
+![image](https://github.com/user-attachments/assets/0d89f600-549c-46a7-bd75-da0033e7a08c)
 
 ## 🚀 Funkcje
 
@@ -97,6 +98,3 @@ npm run dev
 ├── tsconfig.node.json
 └── vite.config.ts
 ```
-
-## 🖼️ Zrzuty ekranu
-![image](https://github.com/user-attachments/assets/0d89f600-549c-46a7-bd75-da0033e7a08c)
